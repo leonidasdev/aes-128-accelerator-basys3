@@ -30,6 +30,3 @@ modelsim.ini
 *.wdb
 *.vcd
 *.fst
-
-# Temporary helper scripts / outputs
-tmp_aes_check.py
