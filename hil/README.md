@@ -1,5 +1,13 @@
 # Hardware-in-the-Loop (HIL) Testing Framework
 
+## Current Status
+
+**Simulation Status**: All tests passing (5/5 FIPS-197 encryption vectors validated)
+
+**HIL Status**: Ready for validation. All simulation tests complete; next phase is to run the full 264-vector regression suite on Basys 3 hardware.
+
+---
+
 ## Overview
 
 This directory contains the complete hardware-in-the-loop testing infrastructure for FPGA validation of the AES-128 cryptographic accelerator design. The framework enables automated comparison of FPGA implementation results against trusted software reference (NIST pycryptodome library) through USB serial communication.

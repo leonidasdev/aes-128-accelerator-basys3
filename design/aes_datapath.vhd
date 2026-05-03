@@ -62,6 +62,17 @@ architecture rtl of aes_datapath is
         return result;
     end function;
 
+    -- Reverse byte order across a 128-bit state.
+    -- Byte i in the output comes from byte (15 - i) in the input.
+    function reverse_state_bytes(state : std_logic_vector(127 downto 0)) return std_logic_vector is
+        variable result : std_logic_vector(127 downto 0);
+    begin
+        for i in 0 to 15 loop
+            result(i * 8 + 7 downto i * 8) := state((15 - i) * 8 + 7 downto (15 - i) * 8);
+        end loop;
+        return result;
+    end function;
+
     -- Internal state and key registers
     signal state_reg    : std_logic_vector(127 downto 0);
     signal key_reg      : std_logic_vector(127 downto 0);
@@ -72,6 +83,10 @@ architecture rtl of aes_datapath is
     signal inv_shift_rows_out : std_logic_vector(127 downto 0);
     signal mix_cols_out    : std_logic_vector(127 downto 0);
     signal inv_mix_cols_out : std_logic_vector(127 downto 0);
+    signal shift_rows_raw_out : std_logic_vector(127 downto 0);
+    signal inv_shift_rows_raw_out : std_logic_vector(127 downto 0);
+    signal mix_cols_raw_out : std_logic_vector(127 downto 0);
+    signal inv_mix_cols_raw_out : std_logic_vector(127 downto 0);
     signal add_key_out     : std_logic_vector(127 downto 0);
     signal inv_addkey_pre_mix : std_logic_vector(127 downto 0);
 
@@ -138,10 +153,19 @@ begin
     u_sub_bytes : sub_bytes port map (state_reg, sub_bytes_out);
     -- Decrypt ordering uses InvShiftRows first, then InvSubBytes.
     u_inv_sub_bytes : inv_sub_bytes port map (inv_shift_rows_out, inv_subbytes_out);
-    u_shift_rows : shift_rows port map (sub_bytes_out, shift_rows_out);
-    u_inv_shift_rows : inv_shift_rows port map (state_reg, inv_shift_rows_out);
-    u_mix_columns : mix_columns port map (shift_rows_out, mix_cols_out);
-    u_inv_mix_columns : inv_mix_columns port map (inv_addkey_pre_mix, inv_mix_cols_out);
+    -- Byte-order adapters are applied at datapath integration boundaries so top-level
+    -- AES behavior matches FIPS vectors without changing leaf-module unit-test contracts.
+    u_shift_rows : shift_rows port map (reverse_state_bytes(sub_bytes_out), shift_rows_raw_out);
+    shift_rows_out <= reverse_state_bytes(shift_rows_raw_out);
+
+    u_inv_shift_rows : inv_shift_rows port map (reverse_state_bytes(state_reg), inv_shift_rows_raw_out);
+    inv_shift_rows_out <= reverse_state_bytes(inv_shift_rows_raw_out);
+
+    u_mix_columns : mix_columns port map (reverse_state_bytes(shift_rows_out), mix_cols_raw_out);
+    mix_cols_out <= reverse_state_bytes(mix_cols_raw_out);
+
+    u_inv_mix_columns : inv_mix_columns port map (reverse_state_bytes(inv_addkey_pre_mix), inv_mix_cols_raw_out);
+    inv_mix_cols_out <= reverse_state_bytes(inv_mix_cols_raw_out);
     -- Use current round key directly so AddRoundKey uses the right key each cycle.
     u_add_round_key : add_round_key port map (state_reg, key_in, add_key_out);
 

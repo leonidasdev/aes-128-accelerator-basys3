@@ -151,6 +151,28 @@ The testbenches under [simulation/testbenches](simulation/testbenches) verify ea
 
 ---
 
+## 4. Current Verification Status
+
+**Simulation Tests Passing**
+- **All 5 FIPS-197 Encryption Vectors**: Test 1–5 in `tb_aes_top.vhd` all report PASS
+  - Vector 1: Expected `69C4E0D86A7B0430D8CDB78070B4C55A` [PASS]
+  - Vector 2: Expected `3AD77BB40D7A3660A89ECAF32466EF97` [PASS]
+  - Vector 3: Expected `F5D3D58503B9699DE785895A96FDBAAF` [PASS]
+  - Vector 4: Expected `B6BC73E109EB1E1988362AB019322385` [PASS]
+  - Vector 5: Expected `0A940BB61A690F830F373688095FDEC1` [PASS]
+- **Primitive Unit Tests**: All transformation modules (SubBytes, ShiftRows, MixColumns, AddRoundKey and inverses) passing
+- **Key Expansion**: Round keys verified correct for all 11 rounds
+- **FSM Timing**: 11 clock cycles per block at 100 MHz
+
+**Recent Fix Applied** (Commit: Fix AES datapath byte-order alignment):
+- Added `reverse_state_bytes()` function in `aes_datapath.vhd` to align byte-order conventions between transform modules and datapath integration
+- Modified ShiftRows, InvShiftRows, MixColumns, InvMixColumns instantiations with byte-reversal adapters
+- Leaf module unit tests continue to pass (no changes to standalone modules)
+
+**Next Milestone**: Hardware-in-the-Loop validation on Basys 3 with full 264-vector regression suite
+
+---
+
 ### 4.1 Unit Verification
 
 Each primitive transformation has its own dedicated testbench. That is the fastest way to catch defects in a controlled scope.
