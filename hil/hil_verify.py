@@ -75,12 +75,15 @@ def check_directory_structure():
     print_header("Directory Structure")
     
     hil_root = Path(__file__).parent
+    repo_root = hil_root.parent
     required_dirs = [
         hil_root / "python",
         hil_root / "vectors",
     ]
     
     required_files = [
+        repo_root / "requirements.txt",
+        repo_root / "setup_venv.ps1",
         hil_root / "python" / "aes_hil_test.py",
         hil_root / "python" / "generate_vectors.py",
         hil_root / "vectors" / "test_vectors.txt",
@@ -229,7 +232,17 @@ def check_setup_integrity():
     checks_total = 0
     
     hil_root = Path(__file__).parent
+    repo_root = hil_root.parent
     
+    # Check if the shared environment setup exists
+    checks_total += 1
+    setup_script = repo_root / "setup_venv.ps1"
+    if setup_script.exists():
+        print_pass("setup_venv.ps1 found")
+        checks_passed += 1
+    else:
+        print_fail("setup_venv.ps1 not found")
+
     # Check if run_hil_tests.ps1 exists
     run_script = hil_root / "run_hil_tests.ps1"
     checks_total += 1

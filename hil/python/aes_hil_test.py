@@ -7,7 +7,7 @@ Usage:
     python aes_hil_test.py [--port COM3] [--baudrate 115200]
 
 Requirements:
-    pip install -r ../requirements.txt
+    pip install -r requirements.txt
 
 Standards:
     - NIST FIPS 197 (AES Specification)
