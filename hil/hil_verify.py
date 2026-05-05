@@ -84,8 +84,6 @@ def check_directory_structure():
         hil_root / "python" / "aes_hil_test.py",
         hil_root / "python" / "generate_vectors.py",
         hil_root / "vectors" / "test_vectors.txt",
-        hil_root / "requirements.txt",
-        hil_root / "setup_venv.ps1",
         hil_root / "run_hil_tests.ps1",
     ]
     
@@ -232,15 +230,6 @@ def check_setup_integrity():
     
     hil_root = Path(__file__).parent
     
-    # Check if setup_venv.ps1 exists and is executable
-    setup_script = hil_root / "setup_venv.ps1"
-    checks_total += 1
-    if setup_script.exists():
-        print_pass("setup_venv.ps1 found")
-        checks_passed += 1
-    else:
-        print_fail("setup_venv.ps1 not found")
-    
     # Check if run_hil_tests.ps1 exists
     run_script = hil_root / "run_hil_tests.ps1"
     checks_total += 1
@@ -249,23 +238,6 @@ def check_setup_integrity():
         checks_passed += 1
     else:
         print_fail("run_hil_tests.ps1 not found")
-    
-    # Check requirements.txt format
-    req_file = hil_root / "requirements.txt"
-    checks_total += 1
-    if req_file.exists():
-        try:
-            with open(req_file, 'r') as f:
-                reqs = [line.strip() for line in f if line.strip() and not line.startswith('#')]
-            if len(reqs) >= 2:
-                print_pass(f"requirements.txt with {len(reqs)} dependencies")
-                checks_passed += 1
-            else:
-                print_fail(f"requirements.txt incomplete ({len(reqs)} dependencies)")
-        except Exception as e:
-            print_fail(f"requirements.txt read error: {e}")
-    else:
-        print_fail("requirements.txt not found")
     
     return checks_passed == checks_total
 
@@ -309,7 +281,7 @@ def main():
         return 0
     else:
         print(f"\n{Colors.RED}{Colors.BOLD}Issues Found{Colors.RESET}")
-        print(f"{Colors.YELLOW}Run: .\\hil\\setup_venv.ps1 (PowerShell){Colors.RESET}\n")
+        print(f"{Colors.YELLOW}Review the HIL prerequisites and rerun the verification script.{Colors.RESET}\n")
         return 1
 
 if __name__ == "__main__":
