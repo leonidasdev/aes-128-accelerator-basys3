@@ -126,7 +126,7 @@ All data values in the serial protocol use uppercase hexadecimal (base-16) encod
 cd c:\amd-vivado-projects\aes_vscode
 
 # Execute setup script (creates .venv and installs dependencies)
-.\hil\setup_venv.ps1
+.\setup_venv.ps1
 
 # Expected output:
 # - "Created directory .venv"
@@ -674,17 +674,18 @@ This directory contains the **Hardware-in-the-Loop (HIL) testing infrastructure*
 ```
 hil/
 ├── README.md                      # This file
-├── requirements.txt               # Python dependencies (pycryptodome, pyserial)
-├── setup_venv.ps1                 # Virtual environment setup script (PowerShell)
-├── run_hil_tests.ps1              # Batch test automation script (PowerShell)
 ├── python/
 │   ├── aes_hil_test.py            # Main HIL test controller
 │   └── generate_vectors.py        # Test vector generation utility
-└── vectors/
-    └── test_vectors.txt           # Canonical FIPS-197 test vectors (read-only reference)
-└── vectors/
-  └── test_vectors.txt           # Comprehensive regression suite (authoritative HIL input)
+├── vectors/
+│   └── test_vectors.txt           # Comprehensive regression suite (authoritative HIL input)
+├── run_hil_tests.ps1              # Batch test automation script (PowerShell)
 ```
+
+Shared setup files live in the repository root:
+- `requirements.txt`
+- `setup_venv.ps1`
+- `setup_venv.sh`
 
 ---
 
@@ -696,7 +697,7 @@ hil/
 # From workspace root: c:\amd-vivado-projects\aes_vscode
 
 # Create virtual environment and install dependencies
-.\hil\setup_venv.ps1
+.\setup_venv.ps1
 
 # Activate the environment
 .\.venv\Scripts\Activate.ps1
@@ -752,7 +753,7 @@ If `setup_venv.ps1` doesn't work:
 
 ```powershell
 pip install --upgrade pip
-pip install -r hil/requirements.txt
+pip install -r requirements.txt
 ```
 
 ---
@@ -929,10 +930,10 @@ Saves results to timestamped file in `hil_test_logs/`:
 **Example Usage**:
 ```powershell
 # Use default location (.venv)
-.\hil\setup_venv.ps1
+.\setup_venv.ps1
 
 # Use custom venv location
-.\hil\setup_venv.ps1 -VenvDir "C:\custom_venv"
+.\setup_venv.ps1 -VenvDir "C:\custom_venv"
 
 # Then activate manually
 C:\custom_venv\Scripts\Activate.ps1
@@ -962,7 +963,7 @@ C:\custom_venv\Scripts\Activate.ps1
 **Problem**: Pylance reports "could not be resolved" for `Crypto.Cipher`, `serial` imports
 
 **Solution**:
-1. Ensure venv is created: `.\hil\setup_venv.ps1`
+1. Ensure venv is created: `.setup_venv.ps1`
 2. Set VS Code Python interpreter:
    - Press `Ctrl+Shift+P` → "Python: Select Interpreter"
    - Choose `.venv\Scripts\python.exe`
@@ -985,7 +986,7 @@ C:\custom_venv\Scripts\Activate.ps1
 
 **Solution**:
 1. Verify venv is activated (prompt shows `.venv`)
-2. Reinstall dependencies: `pip install -r hil/requirements.txt`
+2. Reinstall dependencies: `pip install -r requirements.txt`
 3. Check pip version: `pip --version` (should be 20.0+)
 
 ### Timeout Errors During Tests
@@ -1073,3 +1074,4 @@ C:\custom_venv\Scripts\Activate.ps1
 **Version**: 1.0  
 **Last Updated**: 2026-04-29  
 **Status**: Production-Ready
+

@@ -206,7 +206,8 @@ HIL testing validates the bitstream on the actual board against a software refer
 - [hil/python/aes_hil_test.py](hil/python/aes_hil_test.py): Python test harness using pyserial and pycryptodome
 - [hil/python/generate_vectors.py](hil/python/generate_vectors.py): Generates additional AES test vectors
 - [hil/hil_verify.py](hil/hil_verify.py): Checks that the HIL environment is ready
-- [hil/requirements.txt](hil/requirements.txt): Python dependencies
+- [requirements.txt](requirements.txt): Python dependencies
+- [setup_venv.ps1](setup_venv.ps1): Creates and populates the shared Python virtual environment
 - [hil/vectors/test_vectors.txt](hil/vectors/test_vectors.txt): Reference vectors
 ### 5.3 HIL Communication Model
 The HIL setup uses a simple ASCII serial protocol:
