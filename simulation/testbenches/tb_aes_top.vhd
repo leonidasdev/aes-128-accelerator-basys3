@@ -86,7 +86,6 @@ architecture sim of tb_aes_top is
             error    : out std_logic
         );
     end component aes_top;
-
     constant CLK_PERIOD : time := 10 ns;
 
     -- Test vector type
@@ -131,8 +130,21 @@ architecture sim of tb_aes_top is
         
         -- All ones key and plaintext
         (plaintext  => x"ffffffffffffffffffffffffffffffff",
-            ciphertext => x"bcbf217cb280cf30b2517052193ab979",
-         key        => x"ffffffffffffffffffffffffffffffff")
+         ciphertext => x"bcbf217cb280cf30b2517052193ab979",
+         key        => x"ffffffffffffffffffffffffffffffff"),
+
+        -- Walking-One Data Patterns
+        (plaintext  => x"00000000000000000000000000000001",
+         ciphertext => x"58e2fccefa7e3061367f1d57a4e7455a",
+         key        => x"00000000000000000000000000000000"),
+        
+        (plaintext  => x"80000000000000000000000000000000",
+         ciphertext => x"3ad78e726c1ec02b7ebfe92b23d9ec34",
+         key        => x"00000000000000000000000000000000"),
+        
+        (plaintext  => x"00000000000000000000000000000000",
+         ciphertext => x"0545aad56da2a97c3663d1432a3d1c84",
+         key        => x"00000000000000000000000000000001")
     );
 
     signal dut_ready : std_logic := '0';
@@ -156,7 +168,6 @@ begin
 
     -- Clock generation
     clk <= not clk after CLK_PERIOD / 2;
-
     process
         variable pass_cnt, fail_cnt : integer := 0;
         variable enc_pass, enc_fail : integer := 0;
@@ -170,6 +181,7 @@ begin
         -- Variables for negative test and assertion checks
         variable done_pulses_neg : integer := 0;
         variable cycles_neg : integer := 0;
+        variable error_detected : boolean := false;
     begin
          report "==============================" & character'val(10) &
              "Starting AES-128 testbench" & character'val(10) &
@@ -248,7 +260,6 @@ begin
                 wait until rising_edge(clk);
                 timeout := timeout + 1;
             end loop;
-
             timeout := 0;
             while done = '0' and timeout < 5000 loop
                 wait until rising_edge(clk);
@@ -318,12 +329,17 @@ begin
             -- During operation, repeatedly assert start to simulate spurious inputs
             done_pulses_neg := 0;
             cycles_neg := 0;
+            error_detected := false;
             while cycles_neg < 200 loop
                 -- Wait for clock edge, then re-assert start for a few cycles while DUT is busy
                 wait until rising_edge(clk);
                 start <= '1';
                 wait until rising_edge(clk);
                 start <= '0';
+
+                if dut_error = '1' then
+                    error_detected := true;
+                end if;
 
                 if done = '1' then
                     done_pulses_neg := done_pulses_neg + 1;
@@ -337,13 +353,13 @@ begin
             end loop;
 
             test_num := test_num + 1;
-            if done_pulses_neg = 1 then
+            if done_pulses_neg = 1 and error_detected then
                 pass_cnt := pass_cnt + 1;
-                report "Test " & integer'image(test_num) & ": PASS" severity note;
+                report "Test " & integer'image(test_num) & ": PASS (dut_error asserted correctly)" severity note;
             else
                 fail_cnt := fail_cnt + 1;
                 report "Test " & integer'image(test_num) & ": FAIL" & character'val(10) &
-                       "  Multiple 'done' assertions detected when start was re-asserted" & character'val(10) &
+                       "  Multiple 'done' assertions or missing 'dut_error' detected when start was re-asserted" & character'val(10) &
                        "  Expected done pulses: 1" & character'val(10) &
                        "  Got done pulses:      " & integer'image(done_pulses_neg) severity warning;
             end if;
@@ -489,7 +505,6 @@ begin
             else
                 report "ERROR: Timeout waiting for dut_ready to go low in round-trip encrypt." severity error;
             end if;
-
             timeout := 0;
             while done = '1' and timeout < 100 loop
                 wait until rising_edge(clk);
