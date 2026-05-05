@@ -14,7 +14,7 @@ Requirements:
     pip install pycryptodome
 
 Usage:
-    python3 generate_vectors.py [extra_random_vectors] [output_file]
+    python generate_vectors.py [extra_random_vectors] [output_file]
 
     extra_random_vectors: optional number of random vectors to append (default: 0)
     output_file: path to output file (default: test_vectors.txt)

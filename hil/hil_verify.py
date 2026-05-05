@@ -20,8 +20,6 @@ Exit Codes:
 """
 
 import sys
-import os
-import subprocess
 from pathlib import Path
 
 class Colors:

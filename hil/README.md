@@ -15,7 +15,7 @@ This directory contains the complete hardware-in-the-loop testing infrastructure
 **Framework Scope:**
 - Architecture: Host PC-to-FPGA serial communication via USB UART
 - Protocol: ASCII command-response based on FIPS-197 test vectors
-- Platform: Windows/Linux Python environment with pycryptodome reference
+- Platform: Windows PowerShell environment with pycryptodome reference
 - Target device: Basys 3 (Xilinx XC7A35T) FPGA board
 - Validation basis: NIST FIPS-197 official test vectors
 - Test coverage: Encryption, decryption, and round-trip verification across a 264-vector regression suite
@@ -33,7 +33,7 @@ This gives broad structural coverage of the AES datapath, key schedule, and host
 **Reference**: NIST FIPS-197 examples plus deterministic edge-case and walking-bit regression coverage
 
 ```text
-Host Computer (Windows/Linux)
+Host Computer (Windows PowerShell)
   Python HIL Test Framework
     aes_hil_test.py
     generate_vectors.py
@@ -114,7 +114,7 @@ All data values in the serial protocol use uppercase hexadecimal (base-16) encod
 ### 2.1 Environment Setup (One Time)
 
 **Prerequisites:**
-- Windows 10 or later (or Linux with Python 3.7+)
+- Windows 10 or later
 - USB cable connected to Basys 3 board
 - FPGA programmed with AES accelerator bitstream
 - COM port available (visible in Device Manager)
@@ -468,15 +468,6 @@ Get-PnpDevice -Status OK | Where-Object { $_.Name -like "*(COM*)" }
 Get-WmiObject Win32_SerialPort | Select-Object Name, DeviceID, Description
 ```
 
-**Linux:**
-```bash
-# List all available serial ports
-ls /dev/ttyUSB* /dev/ttyACM*
-
-# Typical output: /dev/ttyUSB0 or /dev/ttyACM0
-# Use port number in scripts (e.g., /dev/ttyUSB0)
-```
-
 ### 5.3 Python Version Management
 
 **Verify Python Version:**
@@ -536,26 +527,9 @@ py -3.9 -m venv .venv
 4. Increase timeout in aes_hil_test.py line ~150: `self.operation_timeout = 0.05` (50 ms instead of 20 ms)
 5. Verify FPGA design compiles and runs in simulation
 
-### 6.4 Cross-Platform Issues
+### 6.4 Windows USB Notes
 
-**Linux-Specific:**
-```bash
-# May need root permissions or udev rules
-sudo usermod -a -G dialout $USER
-
-# Add udev rule for FTDI devices
-echo 'ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", MODE="0666"' | sudo tee /etc/udev/rules.d/99-ftdi.rules
-sudo udevadm control --reload
-```
-
-**macOS-Specific:**
-```bash
-# FTDI drivers for macOS
-# https://www.ftdichip.com/Drivers/VCP.htm
-# After installation, ports appear as /dev/tty.usbserial-XXXXXX
-
-# Use port in scripts: /dev/tty.usbserial-XXXXXX
-```
+If COM ports are missing, reinstall the FTDI USB-UART driver and verify the board appears in Device Manager before rerunning the scripts.
 
 ---
 
@@ -685,7 +659,6 @@ hil/
 Shared setup files live in the repository root:
 - `requirements.txt`
 - `setup_venv.ps1`
-- `setup_venv.sh`
 
 ---
 
@@ -857,12 +830,12 @@ device.close()
 **Return Value**: `True` on success, `False` on error
 
 **Example Usage**:
-```bash
+```powershell
 # Generate 50 random test vectors
-python generate_vectors.py 50 vectors/extended_vectors.txt
+python .\python\generate_vectors.py 50 .\vectors\extended_vectors.txt
 
 # Using defaults (10 vectors, test_vectors_generated.txt)
-python generate_vectors.py
+python .\python\generate_vectors.py
 ```
 
 **Output Format**: Identical to canonical format (plaintext ciphertext key)
