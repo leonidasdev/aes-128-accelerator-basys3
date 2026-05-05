@@ -1,14 +1,15 @@
---
--- Purpose:   Self-checking testbench for ShiftRows transformation.
--- Author:    PHR26-T03
--- Date:      29/04/2026
+----------------------------------------------------------------------------------
+-- Module Name:    tb_shift_rows
+-- Project:        AES-128 Hardware Accelerator
+-- Author:         PHR26-T03
+-- Date:           29/04/2026
 --
 -- Description:
--- Comprehensive testbench following NIST FIPS-197 validation standards.
--- Tests the ShiftRows module by verifying byte displacement patterns.
--- ShiftRows performs row-wise circular shifts (rows 0-3 shift by 0, 1, 2, 3 bytes).
--- Validates shift correctness with indexed bytes, zero, and all-ones patterns.
+--   Unit testbench for ShiftRows transformation. Validates row-wise circular left
+--   shifts (0, 1, 2, 3 bytes for rows 0-3) with indexed bytes and pattern tests.
 --
+--   Implementation: Zero-latency combinational verification with self-checking assertions.
+----------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;

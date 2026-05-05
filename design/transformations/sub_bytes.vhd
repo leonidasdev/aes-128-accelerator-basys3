@@ -1,14 +1,16 @@
+----------------------------------------------------------------------------------
+-- Module Name:    sub_bytes
+-- Project:        AES-128 Hardware Accelerator
+-- Author:         PHR26-T03
+-- Date:           29/04/2026
 --
--- Purpose:   AES SubBytes transformation (forward S-Box substitution).
--- Author:    PHR26-T03
--- Date:      29/04/2026
--- 
 -- Description:
--- This module performs the SubBytes transformation of AES encryption.
--- It substitutes each byte using the FIPS-197 standard S-Box.
--- The 128-bit state is divided into 16 bytes, each substituted independently.
--- Purely combinational.
+--   Forward SubBytes transformation: substitutes each byte using FIPS-197 S-Box.
+--   Processes all 16 bytes of the 128-bit state independently and in parallel.
+--   Lookup table implementation using case statements.
 --
+--   Implementation: Fully unrolled combinational logic with 16 parallel S-Box lookups.
+----------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;

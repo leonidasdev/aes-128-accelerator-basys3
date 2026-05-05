@@ -1,14 +1,15 @@
---
--- Purpose:   Self-checking testbench for key_expansion module.
--- Author:    PHR26-T03
--- Date:      29/04/2026
+----------------------------------------------------------------------------------
+-- Module Name:    tb_key_expansion
+-- Project:        AES-128 Hardware Accelerator
+-- Author:         PHR26-T03
+-- Date:           29/04/2026
 --
 -- Description:
--- Comprehensive testbench following NIST FIPS-197 validation standards.
--- Tests key schedule expansion (key_expansion module) with multiple known vectors.
--- Verifies all 11 round keys for both encryption and decryption modes.
--- Test vectors: FIPS-197 standard key and all-zeros key special case.
+--   Unit testbench for key expansion module. Validates all 11 round keys from
+--   master key against FIPS-197 standard vectors for both encryption and decryption modes.
 --
+--   Implementation: Combinational verification across all 11 rounds with assertion-based reporting.
+----------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;

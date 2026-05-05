@@ -1,18 +1,16 @@
---
--- Purpose:   Self-checking testbench for AES-128 complete core (aes_top).
--- Author:    PHR26-T03
--- Date:      29/04/2026
+----------------------------------------------------------------------------------
+-- Module Name:    tb_aes_top
+-- Project:        AES-128 Hardware Accelerator
+-- Author:         PHR26-T03
+-- Date:           29/04/2026
 --
 -- Description:
--- Comprehensive testbench following NIST FIPS-197 validation standards.
--- Tests both encryption and decryption with known vectors.
--- Validates:
---   1. Encryption against known ciphertexts
---   2. Decryption against known plaintexts  
---   3. Round-trip property: Decrypt(Encrypt(p)) = p
---   4. Negative test: Start signal re-assertion during operation
---   5. Known test vectors from FIPS-197 Appendix C
+--   Self-checking testbench for AES-128 complete core. Tests encryption, decryption,
+--   and round-trip verification against FIPS-197 known vectors. Validates all 10 rounds
+--   plus final round behavior for both forward and inverse transformations.
 --
+--   Implementation: Cycle-accurate simulation with assertion-based pass/fail reporting.
+----------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;

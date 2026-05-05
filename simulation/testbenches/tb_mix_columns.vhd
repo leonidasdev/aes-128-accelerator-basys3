@@ -1,14 +1,15 @@
---
--- Purpose:   Self-checking testbench for MixColumns transformation.
--- Author:    PHR26-T03
--- Date:      29/04/2026
+----------------------------------------------------------------------------------
+-- Module Name:    tb_mix_columns
+-- Project:        AES-128 Hardware Accelerator
+-- Author:         PHR26-T03
+-- Date:           29/04/2026
 --
 -- Description:
--- Comprehensive testbench following NIST FIPS-197 validation standards.
--- Tests GF(2^8) column mixing with comprehensive known vectors.
--- Validates the matrix multiplication over GF(2^8) with coefficients [2, 3, 1, 1].
--- Includes FIPS-197 standard vectors and systematic pattern verification.
+--   Unit testbench for MixColumns transformation. Validates GF(2^8) column mixing
+--   with standard AES matrix coefficients [2, 3, 1, 1] using FIPS-197 test vectors.
 --
+--   Implementation: Zero-latency combinational verification with self-checking assertions.
+----------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;

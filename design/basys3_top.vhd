@@ -1,11 +1,16 @@
---
--- Purpose:   Basys 3 board wrapper for the AES-128 core.
+----------------------------------------------------------------------------------
+-- Module Name:    basys3_top
+-- Project:        AES-128 Hardware Accelerator
+-- Author:         PHR26-T03
+-- Date:           29/04/2026
 --
 -- Description:
--- This wrapper keeps the synthesizable top-level I/O small enough for the
--- XC7A35T/CPG236 package by instantiating the AES core internally and
--- selecting from a small set of built-in FIPS test vectors.
+--   Board wrapper for AES-128 core on Basys 3 (XC7A35T). Exposes minimal I/O:
+--   clock, reset, start button, mode switch, vector selector, and LED status outputs.
+--   Instantiates AES core with built-in FIPS-197 test vector lookup.
 --
+--   Implementation: Direct AES core instantiation with test vector ROM and LED mapping.
+----------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;

@@ -1,7 +1,16 @@
+----------------------------------------------------------------------------------
+-- Module Name:    add_round_key
+-- Project:        AES-128 Hardware Accelerator
+-- Author:         PHR26-T03
+-- Date:           29/04/2026
 --
--- AddRoundKey transformation
--- XORs the 128-bit state with the 128-bit round key
+-- Description:
+--   AddRoundKey transformation: XORs the 128-bit state with the 128-bit round key.
+--   Self-inverse operation (same logic for encryption and decryption).
 --
+--   Implementation: Purely combinational bitwise XOR with no latency.
+----------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 

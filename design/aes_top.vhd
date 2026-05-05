@@ -1,13 +1,16 @@
---
--- Purpose:   AES-128 Top Module (complete encryption/decryption accelerator).
--- Author:    PHR26-T03
--- Date:      29/04/2026
+----------------------------------------------------------------------------------
+-- Module Name:    aes_top
+-- Project:        AES-128 Hardware Accelerator
+-- Author:         PHR26-T03
+-- Date:           29/04/2026
 --
 -- Description:
--- Top-level wrapper integrating FSM, datapath, and key expansion.
--- Provides external interface for start signal, plaintext/ciphertext,
--- master key, and output completion signal.
+--   Top-level wrapper integrating FSM, datapath, and key expansion.
+--   Provides external interface for start signal, plaintext/ciphertext,
+--   master key, and output completion signal.
 --
+--   Implementation: Synchronous design with start/done handshake protocol.
+----------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;

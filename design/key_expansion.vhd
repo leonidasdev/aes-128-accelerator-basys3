@@ -1,14 +1,16 @@
---
--- Purpose:   AES Key Expansion module.
--- Author:    PHR26-T03
--- Date:      29/04/2026
+----------------------------------------------------------------------------------
+-- Module Name:    key_expansion
+-- Project:        AES-128 Hardware Accelerator
+-- Author:         PHR26-T03
+-- Date:           29/04/2026
 --
 -- Description:
--- This module generates the 11 round keys (128 bits each) from a 128-bit master key.
--- It uses the AES key schedule algorithm with SubWord, RotWord, and Rcon.
--- Outputs can be selected by round index and mode (forward/inverse).
--- Purely combinational.
+--   Generates 11 round keys (128 bits each) from a 128-bit master key using
+--   the AES key schedule with SubWord, RotWord, and round constant operations.
+--   Supports round selection and forward/inverse modes.
 --
+--   Implementation: Purely combinational logic with round index multiplexing.
+----------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;

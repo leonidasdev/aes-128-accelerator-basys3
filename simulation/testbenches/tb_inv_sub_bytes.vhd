@@ -1,14 +1,15 @@
---
--- Purpose:   Self-checking testbench for InvSubBytes transformation.
--- Author:    PHR26-T03
--- Date:      29/04/2026
+----------------------------------------------------------------------------------
+-- Module Name:    tb_inv_sub_bytes
+-- Project:        AES-128 Hardware Accelerator
+-- Author:         PHR26-T03
+-- Date:           29/04/2026
 --
 -- Description:
--- Comprehensive testbench following NIST FIPS-197 validation standards.
--- Tests the InvSubBytes module using known inverse S-Box vectors from FIPS-197.
--- Verifies that InvSubBytes(SubBytes(x)) = x for various input patterns.
--- Validates inverse S-Box implementation for all 256 byte values in all positions.
+--   Unit testbench for inverse SubBytes transformation. Validates FIPS-197 inverse
+--   S-Box for all 256 byte values and verifies inverse property recovery.
 --
+--   Implementation: Zero-latency combinational verification with self-checking assertions.
+----------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;

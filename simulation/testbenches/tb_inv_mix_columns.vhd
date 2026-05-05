@@ -1,14 +1,15 @@
---
--- Purpose:   Self-checking testbench for InvMixColumns transformation.
--- Author:    PHR26-T03
--- Date:      29/04/2026
+----------------------------------------------------------------------------------
+-- Module Name:    tb_inv_mix_columns
+-- Project:        AES-128 Hardware Accelerator
+-- Author:         PHR26-T03
+-- Date:           29/04/2026
 --
 -- Description:
--- Comprehensive testbench following NIST FIPS-197 validation standards.
--- Tests InvMixColumns (decryption column mixing) with comprehensive vectors.
--- Validates GF(2^8) inverse coefficients [0x0e, 0x0b, 0x0d, 0x09].
--- Verifies inverse property: InvMixColumns(MixColumns(x)) = x with FIPS-197 vectors.
+--   Unit testbench for inverse MixColumns transformation. Validates GF(2^8) inverse
+--   coefficients [0x0E, 0x0B, 0x0D, 0x09] and verifies inverse property.
 --
+--   Implementation: Zero-latency combinational verification with self-checking assertions.
+----------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;

@@ -1,19 +1,16 @@
---
--- Purpose:   AES Finite State Machine for orchestrating encryption/decryption.
--- Author:    PHR26-T03
--- Date:      29/04/2026
+----------------------------------------------------------------------------------
+-- Module Name:    aes_fsm
+-- Project:        AES-128 Hardware Accelerator
+-- Author:         PHR26-T03
+-- Date:           29/04/2026
 --
 -- Description:
--- This FSM sequences the AES operations:
--- - IDLE: waiting for start signal
--- - LOAD: loads key from key_expansion
--- - ROUND_0 through ROUND_9: executes round transformations
--- - FINAL_ROUND: last round without MixColumns
--- - OUTPUT: result ready
--- - ERROR: error state
+--   Sequences AES operations (IDLE → LOAD → ROUND_0..9 → FINAL_ROUND → OUTPUT).
+--   Generates control signals for datapath and key scheduling.
+--   Moore machine with registered outputs and synchronous transitions.
 --
--- Uses a synchronous FSM (Moore machine with registered outputs).
---
+--   Implementation: 11 clocked states, control logic for 10 rounds plus initialization.
+----------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;

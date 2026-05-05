@@ -1,16 +1,16 @@
---
--- Purpose:   AES ShiftRows transformation.
--- Author:    PHR26-T03
--- Date:      29/04/2026
+----------------------------------------------------------------------------------
+-- Module Name:    shift_rows
+-- Project:        AES-128 Hardware Accelerator
+-- Author:         PHR26-T03
+-- Date:           29/04/2026
 --
 -- Description:
--- This module performs the ShiftRows transformation of AES.
--- Row 0: no shift
--- Row 1: left circular shift by 1 byte
--- Row 2: left circular shift by 2 bytes
--- Row 3: left circular shift by 3 bytes
--- Purely combinational, just rewiring.
+--   Forward ShiftRows transformation for AES encryption.
+--   Row 0: no shift, Row 1: left shift by 1, Row 2: left shift by 2, Row 3: left shift by 3.
+--   Operates on 128-bit state matrix in column-major format.
 --
+--   Implementation: Purely combinational byte rewiring with no latency.
+----------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;

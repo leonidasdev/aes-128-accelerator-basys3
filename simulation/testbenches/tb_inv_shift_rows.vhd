@@ -1,14 +1,15 @@
---
--- Purpose:   Self-checking testbench for InvShiftRows transformation.
--- Author:    PHR26-T03
--- Date:      29/04/2026
+----------------------------------------------------------------------------------
+-- Module Name:    tb_inv_shift_rows
+-- Project:        AES-128 Hardware Accelerator
+-- Author:         PHR26-T03
+-- Date:           29/04/2026
 --
 -- Description:
--- Comprehensive testbench following NIST FIPS-197 validation standards.
--- Tests that InvShiftRows correctly inverts ShiftRows.
--- Verifies that InvShiftRows(ShiftRows(state)) = state for known patterns.
--- Validates inverse shift correctness with indexed bytes, zero, and all-ones patterns.
+--   Unit testbench for inverse ShiftRows transformation. Validates that
+--   InvShiftRows correctly inverts ShiftRows with indexed bytes and patterns.
 --
+--   Implementation: Zero-latency combinational verification with self-checking assertions.
+----------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;

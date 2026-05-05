@@ -1,16 +1,16 @@
---
--- Purpose:   AES InvShiftRows transformation.
--- Author:    PHR26-T03
--- Date:      29/04/2026
+----------------------------------------------------------------------------------
+-- Module Name:    inv_shift_rows
+-- Project:        AES-128 Hardware Accelerator
+-- Author:         PHR26-T03
+-- Date:           29/04/2026
 --
 -- Description:
--- This module performs the inverse of ShiftRows.
--- Row 0: no shift
--- Row 1: right circular shift by 1 byte
--- Row 2: right circular shift by 2 bytes
--- Row 3: right circular shift by 3 bytes
--- Purely combinational, just rewiring.
+--   Inverse ShiftRows transformation for AES decryption.
+--   Row 0: no shift, Row 1: right shift by 1, Row 2: right shift by 2, Row 3: right shift by 3.
+--   Operates on 128-bit state matrix in column-major format.
 --
+--   Implementation: Purely combinational byte rewiring complement of shift_rows.
+----------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;

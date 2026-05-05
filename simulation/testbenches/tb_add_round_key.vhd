@@ -1,13 +1,16 @@
---
--- Purpose:   Self-checking testbench for AddRoundKey transformation.
--- Author:    PHR26-T03
--- Date:      29/04/2026
+----------------------------------------------------------------------------------
+-- Module Name:    tb_add_round_key
+-- Project:        AES-128 Hardware Accelerator
+-- Author:         PHR26-T03
+-- Date:           29/04/2026
 --
 -- Description:
--- Tests the AddRoundKey module by verifying the 128-bit XOR operation.
--- Verifies that the XOR of state and round key produces expected outputs.
--- Tests include: zero key, self-inverse property, and pattern-based vectors.
+--   Unit testbench for AddRoundKey transformation. Validates 128-bit XOR operation
+--   with zero key, self-inverse property, and pattern-based test vectors.
 --
+--   Implementation: Zero-latency combinational verification with self-checking assertions.
+----------------------------------------------------------------------------------
+
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;

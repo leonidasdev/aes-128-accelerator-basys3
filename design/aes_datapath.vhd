@@ -1,16 +1,16 @@
---
--- Purpose:   AES Datapath module.
--- Author:    PHR26-T03
--- Date:      29/04/2026
+----------------------------------------------------------------------------------
+-- Module Name:    aes_datapath
+-- Project:        AES-128 Hardware Accelerator
+-- Author:         PHR26-T03
+-- Date:           29/04/2026
 --
 -- Description:
--- This module contains the main data processing elements:
--- - 128-bit state register
--- - 128-bit current round key register
--- - Transformation modules (SubBytes, ShiftRows, MixColumns, AddRoundKey, etc.)
--- - Multiplexers to select encryption or decryption path
--- - All combinational, interfaced with FSM control signals.
+--   Main data processing element integrating state register, round key register,
+--   and all transformation modules (SubBytes, ShiftRows, MixColumns, AddRoundKey).
+--   Supports both encryption and decryption paths via control multiplexers.
 --
+--   Implementation: Pipelined datapath with byte-reversal adapters for state alignment.
+----------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;

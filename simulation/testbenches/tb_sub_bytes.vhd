@@ -1,14 +1,15 @@
---
--- Purpose:   Self-checking testbench for SubBytes transformation.
--- Author:    PHR26-T03
--- Date:      29/04/2026
+----------------------------------------------------------------------------------
+-- Module Name:    tb_sub_bytes
+-- Project:        AES-128 Hardware Accelerator
+-- Author:         PHR26-T03
+-- Date:           29/04/2026
 --
 -- Description:
--- Comprehensive testbench following NIST FIPS-197 validation standards.
--- Tests the SubBytes module using known vectors from FIPS-197.
--- Verifies S-Box lookups for all 256 possible byte values in all 16 positions.
--- Validates FIPS-197 canonical S-Box implementation.
+--   Unit testbench for SubBytes transformation. Validates FIPS-197 S-Box lookups
+--   for all 256 possible byte values in all 16 parallel positions.
 --
+--   Implementation: Zero-latency combinational verification with self-checking assertions.
+----------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
