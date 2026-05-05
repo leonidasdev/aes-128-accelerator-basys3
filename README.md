@@ -227,19 +227,34 @@ This was chosen because it is easy to debug, easy to log, and sufficient for a s
 
 ---
 
+### 5.5 Board LED & Display Mapping
+
+- **Purpose**: The Basys 3 wrapper exposes a small set of board-visible indicators so bring-up and quick checks can be performed without a PC attached.
+- **LED mapping (16 LEDs, MSB->LSB)**:
+  - **LED15**: `ready` (core ready to accept a start)
+  - **LED14**: `done` (operation finished)
+  - **LED13**: `error` (error flag from core)
+  - **LED12**: `mode` (1 = encrypt, 0 = decrypt)
+  - **LED11..9**: `vector_sel` (3-bit selected built-in test vector index)
+  - **LED8..0**: reserved (drive = 0)
+
+- **Seven-segment displays**: intentionally forced off during HIL bring-up to avoid confusing activity. They are present in the wrapper but driven inactive; if you want to enable them for debug, edit [design/basys3_top.vhd](design/basys3_top.vhd) and update the constraint file [constraints/basys3_aes.xdc](constraints/basys3_aes.xdc).
+
+This mapping is intentionally minimal so the bitstream does not risk driving many external pins and to make status interpretation straightforward during early hardware validation.
+
 ## 6. Synthesis and Constraints
 
 ### 6.1 Synthesis View
 
-The design is intended to be small enough for the XC7A35T while still leaving headroom for timing closure and future integration.
+The reusable AES core is intended to be small enough for the XC7A35T while still leaving headroom for timing closure and future integration. For hardware builds, the board-facing top-level entity is [design/basys3_top.vhd](design/basys3_top.vhd), which wraps the core with a small Basys 3 control and status interface.
 
 ### 6.2 Constraint Strategy
 
-The constraint file [constraints/basys3_aes.xdc](constraints/basys3_aes.xdc) captures the board clock and the basic I/O mapping required for implementation.
+The constraint file [constraints/basys3_aes.xdc](constraints/basys3_aes.xdc) targets [design/basys3_top.vhd](design/basys3_top.vhd) and assigns pins only to the board wrapper ports. This keeps the synthesis top-level I/O within the Basys 3 device limits.
 
 ### 6.3 Why the Constraint Set Is Minimal
 
-This project is primarily a cryptographic accelerator and verification platform. Keeping the external interface minimal reduces risk and makes timing easier to close.
+This project is primarily a cryptographic accelerator and verification platform. Keeping the external interface small reduces risk and makes timing easier to close. The AES core itself remains unchanged and is exercised through the wrapper in hardware and through `tb_aes_top.vhd` in simulation.
 
 ---
 
@@ -275,8 +290,9 @@ Use Vivado or GHDL to run the testbenches. The top-level bench is [tb_aes_top.vh
 
 1. Program the Basys 3 board with the synthesized bitstream.
 2. Connect the board to the PC using the onboard micro-USB cable.
-3. Run the HIL environment from the [hil](hil) directory.
-4. Execute [run_hil_tests.ps1](hil/run_hil_tests.ps1).
+3. Ensure [design/basys3_top.vhd](design/basys3_top.vhd) is selected as the Vivado top module for implementation.
+4. Run the HIL environment from the [hil](hil) directory.
+5. Execute [run_hil_tests.ps1](hil/run_hil_tests.ps1).
 
 ### 8.3 PC-to-FPGA Connection
 
