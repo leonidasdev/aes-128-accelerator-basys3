@@ -85,12 +85,12 @@ architecture rtl of uart_aes_controller is
 
 begin
 
-    -- Instancia del RX de Edu
+    -- Instancia del RX de uart
     u_rx : uart_rx_module port map (
         clk => clk, rx => rx, rx_byte => rx_byte_sig, rx_valid => rx_valid_sig
     );
 
-    -- Instancia del TX de Edu
+    -- Instancia del TX de uart
     u_tx : uart_tx port map (
         clk => clk, tx_start => tx_start_sig, tx_data_in => tx_data_sig, tx => tx, tx_ready => tx_ready_sig
     );
