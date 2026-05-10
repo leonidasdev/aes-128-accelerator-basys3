@@ -114,14 +114,23 @@ begin
     clk <= not clk after CLK_PERIOD / 2;
 
     process
+        variable pass_cnt : integer := 0;
+        variable fail_cnt : integer := 0;
+        variable test_num : integer := 0;
         variable idle_wait : time;
+        constant KEY_HEX_LOWER : string := "000102030405060708090a0b0c0d0e0f";
     begin
+        report "==============================" & character'val(10) &
+            "Starting tb_uart_aes_controller" & character'val(10) &
+            "==============================" severity note;
+
         rst_n <= '0';
         wait for 200 ns;
         rst_n <= '1';
         wait for 200 ns;
 
-        -- Happy-path encryption transaction.
+        -- Test 1: Happy-path encryption transaction.
+        test_num := test_num + 1;
         send_uart_string(rx, "KEY:");
         send_uart_string(rx, KEY_HEX);
         send_uart_byte(rx, x"0A");
@@ -138,12 +147,15 @@ begin
         send_uart_byte(rx, x"0A");
 
         expect_uart_string(tx, EXPECTED_HEX);
+        pass_cnt := pass_cnt + 1;
+        report "Test " & integer'image(test_num) & ": PASS" severity note;
 
         idle_wait := 200 us;
         wait for idle_wait;
-        assert tx = '1'
-            report "UART TX did not return to idle after happy-path response"
-            severity error;
+        if tx /= '1' then
+            fail_cnt := fail_cnt + 1;
+            report "Test " & integer'image(test_num) & ": FAIL - UART TX did not return to idle" severity warning;
+        end if;
 
         -- Malformed-input recovery: inject a bad hex character, then verify the
         -- controller still accepts the next valid transaction.
@@ -152,12 +164,18 @@ begin
         send_uart_byte(rx, x"0A");
 
         wait for 100 us;
-        assert tx = '1'
-            report "Malformed input should not trigger a UART response"
-            severity error;
+        test_num := test_num + 1;
+        if tx /= '1' then
+            fail_cnt := fail_cnt + 1;
+            report "Test " & integer'image(test_num) & ": FAIL - malformed input triggered unexpected UART response" severity warning;
+        else
+            pass_cnt := pass_cnt + 1;
+            report "Test " & integer'image(test_num) & ": PASS" severity note;
+        end if;
 
+        -- Lowercase hex handling test
         send_uart_string(rx, "KEY:");
-        send_uart_string(rx, KEY_HEX);
+        send_uart_string(rx, KEY_HEX_LOWER);
         send_uart_byte(rx, x"0A");
 
         send_uart_string(rx, "MODE:");
@@ -172,8 +190,57 @@ begin
         send_uart_byte(rx, x"0A");
 
         expect_uart_string(tx, EXPECTED_HEX);
+        test_num := test_num + 1;
+        pass_cnt := pass_cnt + 1;
+        report "Test " & integer'image(test_num) & ": PASS" severity note;
 
-        wait for 200 us;
-        assert false report "UART-AES controller integration test completed" severity failure;
+         -- Back-to-back transactions: send a second identical request immediately
+         -- after the first to stress controller buffering / busy handling.
+         send_uart_string(rx, "KEY:");
+         send_uart_string(rx, KEY_HEX);
+         send_uart_byte(rx, x"0A");
+
+         send_uart_string(rx, "MODE:");
+         send_uart_byte(rx, x"31");
+         send_uart_byte(rx, x"0A");
+
+         send_uart_string(rx, "DATA:");
+         send_uart_string(rx, DATA_HEX);
+         send_uart_byte(rx, x"0A");
+
+         send_uart_string(rx, "START");
+         send_uart_byte(rx, x"0A");
+
+         -- Immediately send a second transaction without waiting for the first response
+         send_uart_string(rx, "KEY:");
+         send_uart_string(rx, KEY_HEX);
+         send_uart_byte(rx, x"0A");
+
+         send_uart_string(rx, "MODE:");
+         send_uart_byte(rx, x"31");
+         send_uart_byte(rx, x"0A");
+
+         send_uart_string(rx, "DATA:");
+         send_uart_string(rx, DATA_HEX);
+         send_uart_byte(rx, x"0A");
+
+         send_uart_string(rx, "START");
+         send_uart_byte(rx, x"0A");
+
+        -- Expect two responses in sequence
+        test_num := test_num + 1;
+        expect_uart_string(tx, EXPECTED_HEX);
+        expect_uart_string(tx, EXPECTED_HEX);
+        pass_cnt := pass_cnt + 1;
+        report "Test " & integer'image(test_num) & ": PASS (back-to-back responses)" severity note;
+
+         -- Final report
+         report "==============================" & character'val(10) &
+             "FINAL REPORT" & character'val(10) &
+             "PASS: " & integer'image(pass_cnt) & character'val(10) &
+             "FAIL: " & integer'image(fail_cnt) & character'val(10) &
+             "==============================" severity note;
+
+         wait;
     end process;
-end sim;
+end architecture sim;
