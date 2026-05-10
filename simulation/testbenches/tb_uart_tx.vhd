@@ -1,34 +1,18 @@
 ----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date: 05.05.2026 18:04:47
--- Design Name: 
--- Module Name: tb_uart_tx - Behavioral
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
--- Description: 
--- 
--- Dependencies: 
--- 
--- Revision:
--- Revision 0.01 - File Created
--- Additional Comments:
--- 
+-- Module Name:    tb_uart_tx
+-- Project:        AES-128 Hardware Accelerator
+-- Author:         PHR26-T03
+-- Date:           29/04/2026
+--
+-- Description:
+--   Unit testbench for the UART transmitter. Exercises byte launch timing
+--   and tx_ready handshaking across multiple transfers.
+--
+--   Implementation: Self-checking stimulus process with fixed UART payloads.
 ----------------------------------------------------------------------------------
 
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx leaf cells in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
+library ieee;
+use ieee.std_logic_1164.all;
 
 entity tb_uart_tx is
 end tb_uart_tx;
@@ -46,14 +30,14 @@ architecture sim of tb_uart_tx is
             tx        : out std_logic;
             tx_ready  : out std_logic
         );
-    end component; 
+    end component;
     signal clk      : std_logic := '0';
     signal tx_start : std_logic := '0';
     signal tx_data_in  : std_logic_vector(7 downto 0) := (others => '0');
     signal tx       : std_logic;
     signal tx_ready : std_logic;
 begin
-    -- Instancia del módulo a probar
+    -- Instantiate the unit under test (UART TX)
     uut: uart_tx
         generic map ( BAUD_CLK => 868 )
         port map (
@@ -64,33 +48,33 @@ begin
             tx_ready => tx_ready
         );
 
-    -- Generador de reloj
+    -- Clock generator
     clk <= not clk after CLK_PERIOD / 2;
 
     process
     begin
         wait for 100 ns;
 
-        -- Enviar primer byte: 0x3F (00111111)
+        -- Send first byte: 0x3F
         if tx_ready = '1' then
-            tx_data_in  <= x"3F";
+            tx_data_in <= x"3F";
             tx_start <= '1';
             wait until rising_edge(clk);
             tx_start <= '0';
         end if;
-        
-        -- Esperar a que termine de transmitir
+
+        -- Wait until transmitter completes, then pause
         wait until tx_ready = '1';
         wait for 50 us;
 
-        -- Enviar segundo byte: 0xA5 (10100101)
-        tx_data_in  <= x"A5";
+        -- Send second byte: 0xA5
+        tx_data_in <= x"A5";
         tx_start <= '1';
         wait until rising_edge(clk);
         tx_start <= '0';
 
         wait for 1 ms;
-        assert false report "Simulación terminada" severity failure;
+        assert false report "Simulation finished" severity failure;
     end process;
 end sim;
 
