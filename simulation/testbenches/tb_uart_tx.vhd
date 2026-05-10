@@ -26,6 +26,7 @@ architecture sim of tb_uart_tx is
             BAUD_CLK : integer := 868
         );
         port (
+            rst_n     : in  std_logic;
             clk       : in  std_logic;
             tx_start  : in  std_logic;
             tx_data_in   : in  std_logic_vector(7 downto 0);
@@ -34,6 +35,7 @@ architecture sim of tb_uart_tx is
         );
     end component;
     signal clk      : std_logic := '0';
+    signal rst_n    : std_logic := '1';
     signal tx_start : std_logic := '0';
     signal tx_data_in  : std_logic_vector(7 downto 0) := (others => '0');
     signal tx       : std_logic;
@@ -43,6 +45,7 @@ begin
     uut: uart_tx
         generic map ( BAUD_CLK => 868 )
         port map (
+            rst_n    => rst_n,
             clk      => clk,
             tx_start => tx_start,
             tx_data_in  => tx_data_in,
@@ -77,7 +80,9 @@ begin
             "Starting tb_uart_tx" & character'val(10) &
             "==============================" severity note;
 
+        rst_n <= '0';
         wait for 100 ns;
+        rst_n <= '1';
 
         -- Test 1: transmit 0x3F and observe tx_ready return and waveform
         test_num := test_num + 1;

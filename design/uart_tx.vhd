@@ -21,6 +21,7 @@ entity uart_tx is
     );
 
     port(
+        rst_n      : in  std_logic;
         clk        : in  std_logic;
         tx_start   : in  std_logic;
         tx_data_in : in  std_logic_vector(7 downto 0);
@@ -38,9 +39,16 @@ architecture rtl of uart_tx is
     signal tx_register: std_logic_vector(7 downto 0) := (others => '0');
 
 begin
-    process(clk)
+    process(clk, rst_n)
     begin
-        if rising_edge(clk) then
+        if rst_n = '0' then
+            tx_state <= IDLE;
+            clk_cnt <= 0;
+            bit_index <= 0;
+            tx_register <= (others => '0');
+            tx <= '1';
+            tx_ready <= '1';
+        elsif rising_edge(clk) then
             case tx_state is
                     when IDLE =>
                         -- Idle state: line is high, transmitter ready

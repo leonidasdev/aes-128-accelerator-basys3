@@ -20,6 +20,7 @@ entity uart_rx is
         CLKS_PER_BIT : integer := 868  -- (100 MHz / 115200 baud)
     );
     port (
+        rst_n     : in  std_logic;
         clk       : in  std_logic;
         rx        : in  std_logic;
         rx_byte   : out std_logic_vector(7 downto 0);
@@ -54,9 +55,16 @@ begin
 
     -- Main receiver FSM: detect start bit, sample data bits LSB-first,
     -- output `rx_byte` and pulse `rx_valid` for one clock cycle when a byte is ready.
-    process(clk)
+    process(clk, rst_n)
     begin
-        if rising_edge(clk) then
+        if rst_n = '0' then
+            state <= IDLE;
+            clk_cnt <= 0;
+            bit_idx <= 0;
+            rx_data <= (others => '0');
+            rx_byte <= (others => '0');
+            rx_valid <= '0';
+        elsif rising_edge(clk) then
             rx_valid <= '0'; -- default: no valid byte
 
             case state is

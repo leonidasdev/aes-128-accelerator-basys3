@@ -67,6 +67,7 @@ architecture rtl of uart_aes_controller is
     component uart_rx
         generic ( CLKS_PER_BIT : integer := 868 );
         port (
+            rst_n     : in  std_logic;
             clk      : in  std_logic;
             rx       : in  std_logic;
             rx_byte  : out std_logic_vector(7 downto 0);
@@ -77,6 +78,7 @@ architecture rtl of uart_aes_controller is
     component uart_tx
         generic ( BAUD_CLK : integer := 868 );
         port (
+            rst_n      : in  std_logic;
             clk        : in  std_logic;
             tx_start   : in  std_logic;
             tx_data_in : in  std_logic_vector(7 downto 0);
@@ -131,6 +133,7 @@ begin
 
     u_rx : uart_rx
         port map (
+            rst_n    => rst_n,
             clk      => clk,
             rx       => rx,
             rx_byte  => rx_byte_sig,
@@ -139,6 +142,7 @@ begin
 
     u_tx : uart_tx
         port map (
+            rst_n      => rst_n,
             clk        => clk,
             tx_start   => tx_start_sig,
             tx_data_in => tx_data_sig,
@@ -172,6 +176,7 @@ begin
             state <= IDLE;
             aes_start <= '0';
             tx_start_sig <= '0';
+            tx_data_sig <= (others => '0');
             aes_data_in <= (others => '0');
             aes_key_in <= (others => '0');
             aes_enc_dec <= '1';
