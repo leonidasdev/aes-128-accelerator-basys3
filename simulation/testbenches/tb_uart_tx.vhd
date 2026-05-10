@@ -111,9 +111,9 @@ begin
         tx_start <= '1';
         wait until rising_edge(clk);
         tx_start <= '0';
-        wait until tx_ready = '1';
         -- Capture waveform for second byte
         receive_serial_byte(tx, received_byte);
+        wait until tx_ready = '1';
         if received_byte = x"A5" then
             pass_cnt := pass_cnt + 1;
             report "Test " & integer'image(test_num) & ": PASS" severity note;
