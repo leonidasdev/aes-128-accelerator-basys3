@@ -199,49 +199,66 @@ The project uses NIST FIPS-197 vectors as the primary reference set. That is the
 
 ## 5. Hardware-in-the-Loop Testing
 
-HIL testing validates the bitstream on the actual board against a software reference model on the PC.
+HIL testing validates the synthesized bitstream on actual hardware against a trusted reference implementation.
 
-### 5.1 HIL Components
+**Three-Layer Testing Strategy:**
 
-- [hil/python/aes_hil_test.py](hil/python/aes_hil_test.py): Python test harness using pyserial and pycryptodome
-- [hil/python/generate_vectors.py](hil/python/generate_vectors.py): Generates additional AES test vectors
-- [hil/hil_verify.py](hil/hil_verify.py): Checks that the HIL environment is ready
-- [requirements.txt](requirements.txt): Python dependencies
-- [setup_venv.ps1](setup_venv.ps1): Creates and populates the shared Python virtual environment
-- [hil/vectors/test_vectors.txt](hil/vectors/test_vectors.txt): Reference vectors
-### 5.3 HIL Communication Model
-The HIL setup uses a simple ASCII serial protocol:
-- `KEY` loads the key
-- `MODE` selects encryption or decryption
-- `DATA` loads the block
-- `START` begins the operation
+1. **Layer 1: FPGA Module Tests** (VHDL simulation)
+   - Unit tests for each primitive transformation (SubBytes, ShiftRows, MixColumns, etc.)
+   - Integration test (tb_aes_top.vhd) with FIPS-197 vectors
+   - Runs in simulation without hardware
+   - Status: All 5 FIPS vectors PASSING
 
-This was chosen because it is easy to debug, easy to log, and sufficient for a single-block validation workflow.
+2. **Layer 2: HIL Tests** (Python + Basys 3 hardware)
+   - 264-vector regression suite (4 canonical + 260 edge cases/walking-one)
+   - Tests encryption, decryption, and round-trip operations
+   - Validates FPGA output against pycryptodome reference
+   - Requires programmed FPGA and USB connection
+   - Expected: 792 tests (264 vectors × 3 operations) PASS
 
-### 5.4 Why Not a More Complex Protocol
+3. **Layer 3: Mock HIL Unit Tests** (Python, no hardware)
+   - Tests Python framework without FPGA
+   - Validates command formatting, response parsing, error handling
+   - Uses mock FPGA responses
+   - Useful for CI/CD and offline validation
+   - Status: Implemented in `hil/python/mock_fpga_controller.py` and `hil/python/test_aes_hil_mock.py`
 
-| Alternative | Why it was not chosen |
-|---|---|
-| Binary framed packets | Faster, but harder to inspect and debug |
-| Interrupt-driven host control | More complex than needed for validation |
-| Simple ASCII commands | Chosen, because clarity matters more than throughput here |
+**Quick Start:**
 
----
+For detailed HIL setup and execution instructions, see [hil/README.md](hil/README.md).
 
-### 5.5 Board LED & Display Mapping
+```powershell
+# One-time environment setup
+cd c:\amd-vivado-projects\aes_vscode
+.\setup_venv.ps1
 
-- **Purpose**: The Basys 3 wrapper exposes a small set of board-visible indicators so bring-up and quick checks can be performed without a PC attached.
-- **LED mapping (16 LEDs, MSB->LSB)**:
-  - **LED15**: `ready` (core ready to accept a start)
-  - **LED14**: `done` (operation finished)
-  - **LED13**: `error` (error flag from core)
-  - **LED12**: `mode` (1 = encrypt, 0 = decrypt)
-  - **LED11..9**: `vector_sel` (3-bit selected built-in test vector index)
-  - **LED8..0**: reserved (drive = 0)
+# Run full test suite on connected Basys 3
+.\hil\run_hil_tests.ps1 -Port COM3
+```
 
-- **Seven-segment displays**: intentionally forced off during HIL bring-up to avoid confusing activity. They are present in the wrapper but driven inactive; if you want to enable them for debug, edit [design/basys3_top.vhd](design/basys3_top.vhd) and update the constraint file [constraints/basys3_aes.xdc](constraints/basys3_aes.xdc).
+**HIL Protocol:**
 
-This mapping is intentionally minimal so the bitstream does not risk driving many external pins and to make status interpretation straightforward during early hardware validation.
+Simple ASCII commands over USB serial (115,200 bps):
+
+| Command | Format | Response |
+|---------|--------|----------|
+| K (Key) | `K:<32-hex>\n` | `<32-hex>\n` |
+| M (Mode) | `M:<0 or 1>\n` | `<0 or 1>\n` |
+| D (Data) | `D:<32-hex>\n` | `<32-hex>\n` |
+| S (Start) | `S\n` | `<32-hex>\n` (result) |
+
+For complete protocol specification and troubleshooting, see [hil/README.md](hil/README.md).
+
+### 5.1 Board LED & Display Mapping
+
+- **LED15**: `ready` (core ready to accept a start)
+- **LED14**: `done` (operation finished)
+- **LED13**: `error` (error flag from core)
+- **LED12**: `mode` (1 = encrypt, 0 = decrypt)
+- **LED11..9**: `vector_sel` (3-bit selected built-in test vector index)
+- **LED8..0**: reserved (driven inactive)
+
+
 
 ## 6. Synthesis and Constraints
 
