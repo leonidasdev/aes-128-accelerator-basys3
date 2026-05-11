@@ -251,12 +251,15 @@ For complete protocol specification and troubleshooting, see [hil/README.md](hil
 
 ### 5.1 Board LED & Display Mapping
 
-- **LED15**: `ready` (core ready to accept a start)
-- **LED14**: `done` (operation finished)
+When using the HIL firmware (`basys3_top.vhd` with `uart_aes_controller`), the 16 Basys3 LEDs show live controller status for visual feedback:
+
+- **LED15**: `ready` (FPGA ready for next command)
+- **LED14**: `done` (AES operation finished)
 - **LED13**: `error` (error flag from core)
-- **LED12**: `mode` (1 = encrypt, 0 = decrypt)
-- **LED11..9**: `vector_sel` (3-bit selected built-in test vector index)
-- **LED8..0**: reserved (driven inactive)
+- **LED12**: `enc_dec` (1 = encrypt mode, 0 = decrypt mode)
+- **LED11..0**: reserved (driven inactive)
+
+These LEDs update in real-time during HIL testing, allowing monitoring of FPGA state without reading serial responses.
 
 
 
@@ -264,15 +267,20 @@ For complete protocol specification and troubleshooting, see [hil/README.md](hil
 
 ### 6.1 Synthesis View
 
-The reusable AES core is intended to be small enough for the XC7A35T while still leaving headroom for timing closure and future integration. For hardware builds, the board-facing top-level entity is [design/basys3_top.vhd](design/basys3_top.vhd), which wraps the core with a small Basys 3 control and status interface.
+The reusable AES core is intended to be small enough for the XC7A35T while still leaving headroom for timing closure and future integration. For hardware builds, the board-facing top-level entity is [design/basys3_top.vhd](design/basys3_top.vhd), which wraps the `uart_aes_controller` to provide UART HIL communication plus visual LED feedback.
 
 ### 6.2 Constraint Strategy
 
-The constraint file [constraints/basys3_aes.xdc](constraints/basys3_aes.xdc) targets [design/basys3_top.vhd](design/basys3_top.vhd) and assigns pins only to the board wrapper ports. This keeps the synthesis top-level I/O within the Basys 3 device limits.
+The constraint file [constraints/basys3_aes.xdc](constraints/basys3_aes.xdc) targets [design/basys3_top.vhd](design/basys3_top.vhd) and assigns pins to the UART and LED port names. The mapping includes:
+- `rx` (UART RX from host)
+- `tx` (UART TX to host)
+- `led_status[15:0]` (16 status LEDs)
+
+This keeps the synthesis top-level I/O within the Basys 3 device limits and exposes all necessary signals for HIL operation and monitoring.
 
 ### 6.3 Why the Constraint Set Is Minimal
 
-This project is primarily a cryptographic accelerator and verification platform. Keeping the external interface small reduces risk and makes timing easier to close. The AES core itself remains unchanged and is exercised through the wrapper in hardware and through `tb_aes_top.vhd` in simulation.
+This project is primarily a cryptographic accelerator and verification platform. Keeping the external interface small reduces risk and makes timing easier to close. The AES core itself remains unchanged and is exercised through the UART wrapper in hardware and through `tb_aes_top.vhd` in simulation.
 
 ---
 
@@ -304,13 +312,18 @@ The design is therefore best viewed as a balanced embedded implementation, not a
 
 Use Vivado or GHDL to run the testbenches. The top-level bench is [tb_aes_top.vhd](simulation/testbenches/tb_aes_top.vhd), and the module-level benches can be run independently.
 
-### 8.2 Hardware Bring-Up
+### 8.2 Hardware Bring-Up (HIL Testing)
 
-1. Program the Basys 3 board with the synthesized bitstream.
-2. Connect the board to the PC using the onboard micro-USB cable.
-3. Ensure [design/basys3_top.vhd](design/basys3_top.vhd) is selected as the Vivado top module for implementation.
-4. Run the HIL environment from the [hil](hil) directory.
-5. Execute [run_hil_tests.ps1](hil/run_hil_tests.ps1).
+1. Synthesize the design with [design/basys3_top.vhd](design/basys3_top.vhd) as the top module.
+   - The constraint file [constraints/basys3_aes.xdc](constraints/basys3_aes.xdc) is automatically selected.
+2. Program the Basys 3 board with the generated bitstream.
+3. Connect the board to the PC using the onboard micro-USB cable (same cable used for JTAG programming and UART HIL).
+4. Verify the board connection in Device Manager (look for a COM port, typically COM3 or higher).
+5. From the project root, run:
+   ```powershell
+   .\hil\run_hil_tests.ps1 -Port COM3
+   ```
+6. Monitor the board LEDs during testing for visual feedback (LED15 = ready, LED14 = done, etc.)
 
 ### 8.3 PC-to-FPGA Connection
 
@@ -330,6 +343,7 @@ If your laptop has only USB-C ports, then you should use a USB-C to micro-USB da
 
 ---
 
-**Project Status:** Ready for simulation, synthesis, and HIL validation  
+**Project Status:** Ready for simulation, synthesis, and hardware HIL validation  
+**Top-Level Design:** `basys3_top.vhd` (UART HIL wrapper with LED status feedback)  
 **Document Intent:** High-level engineering overview, module roles, and verification strategy  
-**Last Updated:** April 30, 2026
+**Last Updated:** May 11, 2026

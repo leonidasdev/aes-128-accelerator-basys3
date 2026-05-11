@@ -11,6 +11,7 @@ Hardware-in-the-loop testing validates the AES-128 FPGA implementation by compar
 - Test coverage: 3 modes per vector = 792 total tests (encryption, decryption, round-trip)
 - Expected duration: 3–5 seconds for full suite
 - Success criterion: All 792 tests PASS (100% match between FPGA and reference)
+- **Visual Feedback:** 16 Basys3 LEDs show real-time controller status (LED15=ready, LED14=done, LED13=error, LED12=mode) during testing
 
 ---
 
@@ -761,7 +762,7 @@ HIL throughput is limited by serial communication (50 vectors/second at 115.2 Kb
 ---
 
 **Framework Version:** 1.0  
-**Last Updated:** April 30, 2026  
+**Last Updated:** May 11, 2026  
 **Status:** Production-Ready
 # Hardware-in-the-Loop (HIL) Testing Framework
 
@@ -1180,6 +1181,6 @@ C:\custom_venv\Scripts\Activate.ps1
 ---
 
 **Version**: 1.0  
-**Last Updated**: 2026-04-29  
+**Last Updated**: 2026-05-11  
 **Status**: Production-Ready
 
