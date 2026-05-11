@@ -33,34 +33,6 @@ end entity aes_top;
 
 architecture rtl of aes_top is
 
-    function slv_to_hstring(value : std_logic_vector) return string is
-        variable result : string(1 to value'length / 4);
-        variable nibble : std_logic_vector(3 downto 0);
-    begin
-        for i in 0 to result'length - 1 loop
-            nibble := value(value'left - i * 4 downto value'left - i * 4 - 3);
-            case to_integer(unsigned(nibble)) is
-                when 0  => result(i + 1) := '0';
-                when 1  => result(i + 1) := '1';
-                when 2  => result(i + 1) := '2';
-                when 3  => result(i + 1) := '3';
-                when 4  => result(i + 1) := '4';
-                when 5  => result(i + 1) := '5';
-                when 6  => result(i + 1) := '6';
-                when 7  => result(i + 1) := '7';
-                when 8  => result(i + 1) := '8';
-                when 9  => result(i + 1) := '9';
-                when 10 => result(i + 1) := 'A';
-                when 11 => result(i + 1) := 'B';
-                when 12 => result(i + 1) := 'C';
-                when 13 => result(i + 1) := 'D';
-                when 14 => result(i + 1) := 'E';
-                when others => result(i + 1) := 'F';
-            end case;
-        end loop;
-        return result;
-    end function;
-
     -- FSM signals
     signal fsm_done, fsm_state_ld, fsm_state_en, fsm_key_ld : std_logic;
     signal fsm_first_rnd, fsm_final_rnd : std_logic;
@@ -174,9 +146,6 @@ begin
                 data_reg <= data_in;
                 key_reg <= key_in;
                 enc_dec_reg <= enc_dec;
-                report "AES_TOP_CAPTURE: data_in=" & slv_to_hstring(data_in) &
-                       " key_in=" & slv_to_hstring(key_in) &
-                       " enc_dec=" & std_logic'image(enc_dec) severity note;
             end if;
         end if;
     end process;
@@ -187,11 +156,6 @@ begin
     ready <= fsm_ready;
     error <= fsm_error;
 
-    process(datapath_state_out, fsm_done)
-    begin
-        if fsm_done = '1' then
-            report "AES_TOP_OUTPUT: data_out=" & slv_to_hstring(datapath_state_out) severity note;
-        end if;
-    end process;
+
 
 end architecture rtl;

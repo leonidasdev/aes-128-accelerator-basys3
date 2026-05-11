@@ -6,8 +6,17 @@
 --
 -- Description:
 --   UART-to-AES controller that parses ASCII commands from the host and
---   drives the AES core (KEY, DATA, MODE, START). Returns the 32-hex ASCII
+--   drives the AES core (K, D, M, S commands). Returns the 32-hex ASCII
 --   result followed by a newline.
+--
+--   Protocol (single-letter commands):
+--     K:<32 hex nibbles>\n     Load key
+--     D:<32 hex nibbles>\n     Load plaintext/ciphertext
+--     M:<0|1>\n                Set mode (1=encrypt, 0=decrypt)
+--     S\n                      Start AES computation
+--   
+--   Response format:
+--     <32 hex nibbles>\n       Output ciphertext/plaintext
 --
 --   Implementation: Sequential FSM with UART RX/TX handshaking and AES core
 --   orchestration.
@@ -171,6 +180,7 @@ begin
     led_status(11 downto 0) <= (others => '0');
 
     process(clk, rst_n)
+        variable prev_state : t_state := IDLE;
     begin
         if rst_n = '0' then
             state <= IDLE;

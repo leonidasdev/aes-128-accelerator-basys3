@@ -108,8 +108,5 @@ begin
     process(all_keys_arr, start)
     begin
         key_out <= all_keys_arr(start) & all_keys_arr(start+1) & all_keys_arr(start+2) & all_keys_arr(start+3);
-        report "KEY_EXP: round=" & integer'image(round_int) & 
-               " enc_dec=" & std_logic'image(enc_dec) & 
-               " word_start=" & integer'image(start) severity note;
     end process;
 end architecture;

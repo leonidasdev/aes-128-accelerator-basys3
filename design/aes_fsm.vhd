@@ -130,11 +130,6 @@ begin
             watchdog_count <= next_watchdog_count;
 
             if current_state /= ST_IDLE or start = '1' then
-                report "FSM_DBG: curr=" & state_to_string(current_state) &
-                       ", next=" & state_to_string(next_state) &
-                       ", round=" & integer'image(round_counter) &
-                       ", next_round=" & integer'image(next_round_counter) &
-                       ", start=" & std_logic'image(start) severity note;
             end if;
 
             -- Watchdog: if exceeded while not idle, go to error

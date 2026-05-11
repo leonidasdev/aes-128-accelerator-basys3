@@ -34,34 +34,6 @@ end entity aes_datapath;
 
 architecture rtl of aes_datapath is
 
-    function slv_to_hstring(value : std_logic_vector) return string is
-        variable result : string(1 to value'length / 4);
-        variable nibble : std_logic_vector(3 downto 0);
-    begin
-        for i in 0 to result'length - 1 loop
-            nibble := value(value'left - i * 4 downto value'left - i * 4 - 3);
-            case to_integer(unsigned(nibble)) is
-                when 0  => result(i + 1) := '0';
-                when 1  => result(i + 1) := '1';
-                when 2  => result(i + 1) := '2';
-                when 3  => result(i + 1) := '3';
-                when 4  => result(i + 1) := '4';
-                when 5  => result(i + 1) := '5';
-                when 6  => result(i + 1) := '6';
-                when 7  => result(i + 1) := '7';
-                when 8  => result(i + 1) := '8';
-                when 9  => result(i + 1) := '9';
-                when 10 => result(i + 1) := 'A';
-                when 11 => result(i + 1) := 'B';
-                when 12 => result(i + 1) := 'C';
-                when 13 => result(i + 1) := 'D';
-                when 14 => result(i + 1) := 'E';
-                when others => result(i + 1) := 'F';
-            end case;
-        end loop;
-        return result;
-    end function;
-
     -- Reverse byte order across a 128-bit state.
     -- Byte i in the output comes from byte (15 - i) in the input.
     function reverse_state_bytes(state : std_logic_vector(127 downto 0)) return std_logic_vector is
@@ -246,14 +218,8 @@ begin
         elsif rising_edge(clk) then
             if state_ld = '1' then
                 state_reg <= state_in;
-                  report "DATAPATH_LOAD: state_in=" & slv_to_hstring(state_in) severity note;
             elsif state_en = '1' then
                 state_reg <= next_state;
-                  report "DATAPATH_UPDATE: first=" & std_logic'image(first_round) & 
-                      " final=" & std_logic'image(final_round) & 
-                      " enc_dec=" & std_logic'image(enc_dec) &
-                      " next_state=" & slv_to_hstring(next_state) &
-                      " state_reg=" & slv_to_hstring(state_reg) severity note;
             end if;
             if key_ld = '1' then
                 key_reg <= key_in;
