@@ -28,7 +28,7 @@
 param(
     [string]$Port = "COM3",
     [int]$Baudrate = 115200,
-    [string]$LogDir = ".\hil_test_logs",
+    [string]$LogDir = ".\hil\results",
     [switch]$Verbose
 )
 
@@ -99,10 +99,6 @@ Write-Info "Baudrate:        $Baudrate bps"
 Write-Info "Test Status:     $testStatus"
 Write-Info "Log File:        $logFile"
 Write-Info "Timestamp:       $timestamp"
-
-$cicdLogFile = ".\hil_test_results_latest.txt"
-Copy-Item $logFile $cicdLogFile -Force
-Write-Info "CI/CD Reference: $cicdLogFile"
 
 if ($exitCode -eq 0) { Write-Success "Hardware-in-the-Loop testing COMPLETED SUCCESSFULLY" } else { Write-Error "Hardware-in-the-Loop testing FAILED"; Write-Error "Check $logFile for details" }
 

@@ -576,8 +576,9 @@ Examples:
         vector_file = Path(args.vector_file)
     else:
         # Default to hil/vectors/test_vectors.txt relative to script location
+        # Script is in hil/python/, so go up one level to hil/, then to vectors/
         script_dir = Path(__file__).parent
-        vector_file = script_dir / "vectors" / "test_vectors.txt"
+        vector_file = script_dir.parent / "vectors" / "test_vectors.txt"
     
     # Load test vectors
     vectors = load_test_vectors(vector_file)

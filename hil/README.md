@@ -452,10 +452,10 @@ binascii.hexlify() produces matching hex string
 
 ## Test Results Logging
 
-Test results automatically saved to timestamped log file in `hil_test_logs/`:
+Test results automatically saved to timestamped log file in `hil/results/`:
 
 ```
-hil_test_logs/hil_test_results_20260511_143022.txt
+hil/results/hil_test_results_20260512_143022.txt
 ```
 
 Log contains:
@@ -497,7 +497,7 @@ python hil\python\generate_vectors.py 1000 stress_test_vectors.txt
 **Parameters:**
 - `-Port COM3` — Serial port name (default COM3)
 - `-Baudrate 115200` — Baud rate (default 115200)
-- `-LogDir .\hil_test_logs` — Output log directory (default current)
+- `-LogDir .\hil\results` — Output log directory (default `.\hil\results`)
 - `-Verbose` — Enable verbose console output
 
 **Workflow:**
@@ -988,7 +988,7 @@ python .\python\generate_vectors.py
 ```powershell
 -Port         # Serial port name (default: COM3)
 -Baudrate     # Baud rate (default: 115200)
--LogDir       # Output log directory (default: .\hil_test_logs)
+-LogDir       # Output log directory (default: .\hil\results)
 -Verbose      # Enable verbose output (switch flag)
 ```
 
@@ -1016,8 +1016,8 @@ python .\python\generate_vectors.py
 ```
 
 **Log Output**:
-Saves results to timestamped file in `hil_test_logs/`:
-- `hil_test_results_20260429_143022.txt`
+Saves results to timestamped file in `hil/results/`:
+- `hil_test_results_20260512_143022.txt`
 
 ---
 
