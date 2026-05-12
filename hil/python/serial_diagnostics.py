@@ -13,8 +13,9 @@ Usage: python serial_diagnostics.py --port COM6
 """
 
 import argparse
-import time
 import sys
+import time
+
 import serial
 import serial.tools.list_ports as comports
 
@@ -130,21 +131,30 @@ def run_single_vector_sequence(s):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--port', '-p', default='COM6')
-    parser.add_argument('--baud', '-b', default=115200, type=int)
+    parser.add_argument('--port', '-p', default='COM6', help='Serial port (default: COM6)')
+    parser.add_argument('--baud', '-b', default=115200, type=int, help='UART baud rate (default: 115200)')
+    parser.add_argument('--timeout', type=float, default=0.5, help='Serial read timeout in seconds (default: 0.5)')
+    parser.add_argument('--skip-modem-probe', action='store_true', help='Skip DTR/RTS and break probing')
+    parser.add_argument('--skip-newline-probe', action='store_true', help='Skip the newline response probe')
+    parser.add_argument('--skip-incremental-probes', action='store_true', help='Skip single-byte write probes')
+    parser.add_argument('--skip-single-vector', action='store_true', help='Skip the K/M/D/S vector sequence')
     args = parser.parse_args()
 
     list_ports()
 
-    s = open_port(args.port, baud=args.baud, timeout=0.5)
+    s = open_port(args.port, baud=args.baud, timeout=args.timeout)
     if s is None:
         print('Unable to open port', args.port)
         sys.exit(1)
 
-    probe_modem_and_toggle(s)
-    newline_probe(s)
-    incremental_probes(s)
-    run_single_vector_sequence(s)
+    if not args.skip_modem_probe:
+        probe_modem_and_toggle(s)
+    if not args.skip_newline_probe:
+        newline_probe(s)
+    if not args.skip_incremental_probes:
+        incremental_probes(s)
+    if not args.skip_single_vector:
+        run_single_vector_sequence(s)
 
     s.close()
     print('\nClosed serial port')

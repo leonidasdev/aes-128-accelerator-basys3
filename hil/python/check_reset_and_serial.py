@@ -1,62 +1,83 @@
-import serial, time, sys
+import argparse
+import sys
+import time
 
-PORT='COM6'
-BAUD=115200
-try:
-    s = serial.Serial(PORT, BAUD, timeout=0.5)
-except Exception as e:
-    print('ERROR: open serial', e)
-    sys.exit(1)
+import serial
 
-print('Port open:', s.is_open)
-# Print modem/control lines where available
-try:
-    print('CTS:', s.cts)
-    print('DSR:', s.dsr)
-    print('RI :', s.ri)
-    print('CD :', s.cd)
-except Exception as e:
-    print('Modem status not available:', e)
 
-print('DTR (before):', s.dtr, 'RTS (before):', s.rts)
+def open_serial(port, baudrate, timeout):
+    try:
+        return serial.Serial(port, baudrate, timeout=timeout)
+    except Exception as e:
+        print('ERROR: open serial', e)
+        return None
 
-# Toggle DTR and RTS to see if board responds (safe pulse)
-print('Toggling DTR/RTS:')
-s.dtr = False
-s.rts = False
-time.sleep(0.2)
-print('DTR:', s.dtr, 'RTS:', s.rts)
-s.dtr = True
-s.rts = True
-time.sleep(0.2)
-print('DTR:', s.dtr, 'RTS:', s.rts)
 
-# Send a UART break which sometimes triggers reset handlers
-print('Sending break (250 ms)')
-try:
-    s.send_break(0.25)
-except Exception as e:
-    print('send_break not supported:', e)
+def main():
+    parser = argparse.ArgumentParser(description='Probe FPGA reset and serial behavior')
+    parser.add_argument('--port', default='COM6', help='Serial port (default: COM6)')
+    parser.add_argument('--baudrate', type=int, default=115200, help='UART baud rate (default: 115200)')
+    parser.add_argument('--timeout', type=float, default=0.5, help='Serial read timeout in seconds (default: 0.5)')
+    parser.add_argument('--break-time', type=float, default=0.25, help='UART break duration in seconds (default: 0.25)')
+    parser.add_argument('--post-break-wait', type=float, default=0.2, help='Wait after break before clearing buffers')
+    parser.add_argument('--final-wait', type=float, default=1.0, help='Wait after newline probe before reading')
+    parser.add_argument('--disable-buffer-reset', action='store_true', help='Do not clear RX/TX buffers before probing')
 
-# Wait and clear buffers
-time.sleep(0.2)
-try:
-    s.reset_input_buffer()
-    s.reset_output_buffer()
-except Exception:
-    pass
+    args = parser.parse_args()
 
-# Send a simple newline to see if any prompt/echo appears
-print('Sending newline probe')
-s.write(b"\n")
-# Wait a little longer for any response
-time.sleep(1.0)
-resp = s.read(2048)
-print('Received bytes:', len(resp))
-if resp:
-    print('RESP:', resp)
-else:
-    print('No response from FPGA')
+    serial_port = open_serial(args.port, args.baudrate, args.timeout)
+    if serial_port is None:
+        sys.exit(1)
 
-s.close()
-print('Closed serial')
+    try:
+        print('Port open:', serial_port.is_open)
+        try:
+            print('CTS:', serial_port.cts)
+            print('DSR:', serial_port.dsr)
+            print('RI :', serial_port.ri)
+            print('CD :', serial_port.cd)
+        except Exception as e:
+            print('Modem status not available:', e)
+
+        print('DTR (before):', serial_port.dtr, 'RTS (before):', serial_port.rts)
+
+        print('Toggling DTR/RTS:')
+        serial_port.dtr = False
+        serial_port.rts = False
+        time.sleep(0.2)
+        print('DTR:', serial_port.dtr, 'RTS:', serial_port.rts)
+        serial_port.dtr = True
+        serial_port.rts = True
+        time.sleep(0.2)
+        print('DTR:', serial_port.dtr, 'RTS:', serial_port.rts)
+
+        print(f'Sending break ({int(args.break_time * 1000)} ms)')
+        try:
+            serial_port.send_break(args.break_time)
+        except Exception as e:
+            print('send_break not supported:', e)
+
+        time.sleep(args.post_break_wait)
+        if not args.disable_buffer_reset:
+            try:
+                serial_port.reset_input_buffer()
+                serial_port.reset_output_buffer()
+            except Exception:
+                pass
+
+        print('Sending newline probe')
+        serial_port.write(b'\n')
+        time.sleep(args.final_wait)
+        resp = serial_port.read(2048)
+        print('Received bytes:', len(resp))
+        if resp:
+            print('RESP:', resp)
+        else:
+            print('No response from FPGA')
+    finally:
+        serial_port.close()
+        print('Closed serial')
+
+
+if __name__ == '__main__':
+    main()

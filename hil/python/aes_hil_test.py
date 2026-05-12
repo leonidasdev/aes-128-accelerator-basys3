@@ -24,7 +24,7 @@ Reference:
     NIST FIPS-197 AES specification validated via pycryptodome
 
 Usage:
-    python aes_hil_test.py --port COM3 --baudrate 115200 [--verbose]
+    python aes_hil_test.py --port COM3 --baudrate 115200 [--timeout 1.0] [--verbose]
 
 Requirements:
     pip install pycryptodome pyserial
@@ -557,6 +557,7 @@ Examples:
     
     parser.add_argument('--port', default='COM3', help='Serial port (default: COM3)')
     parser.add_argument('--baudrate', type=int, default=115200, help='Baud rate (default: 115200)')
+    parser.add_argument('--timeout', type=float, default=1.0, help='Serial read timeout in seconds (default: 1.0)')
     parser.add_argument('--vector-file', default=None, help='Path to test vector file (default: hil/vectors/test_vectors.txt)')
     parser.add_argument('--verbose', action='store_true', help='Enable verbose logging')
     
@@ -565,11 +566,11 @@ Examples:
     print("="*70)
     print("AES-128 FPGA Hardware-in-the-Loop Test Suite")
     print("="*70)
-    print(f"Port: {args.port}, Baudrate: {args.baudrate} bps")
+    print(f"Port: {args.port}, Baudrate: {args.baudrate} bps, Timeout: {args.timeout} s")
     print("="*70 + "\n")
     
     # Initialize hardware interface
-    tester = AESHardwareTest(args.port, args.baudrate, verbose=args.verbose)
+    tester = AESHardwareTest(args.port, args.baudrate, timeout=args.timeout, verbose=args.verbose)
     
     # Determine vector file path
     if args.vector_file:

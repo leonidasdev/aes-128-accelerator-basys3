@@ -14,6 +14,9 @@
 .PARAMETER Baudrate
     UART baud rate used by the FPGA UART bridge.
 
+.PARAMETER Timeout
+    UART read timeout used by the Python harness in seconds.
+
 .PARAMETER LogDir
     Directory where timestamped test logs are written.
 
@@ -26,8 +29,9 @@
 #>
 
 param(
-    [string]$Port = "COM3",
+    [string]$Port = "COM6",
     [int]$Baudrate = 115200,
+    [double]$Timeout = 1.0,
     [string]$LogDir = ".\hil\results",
     [switch]$Verbose
 )
@@ -48,6 +52,7 @@ Write-Header "AES-128 FPGA Hardware-in-the-Loop Test Suite"
 Write-Info "Starting HIL tests..."
 Write-Info "Port: $Port"
 Write-Info "Baudrate: $Baudrate bps"
+Write-Info "Timeout: $Timeout s"
 Write-Info "Python executable: $PythonExe"
 
 if (-not (Test-Path $LogDir)) { New-Item -ItemType Directory -Path $LogDir | Out-Null; Write-Info "Created log directory: $LogDir" }
@@ -80,9 +85,12 @@ $portExists = Get-PnpDevice -Status OK -ErrorAction SilentlyContinue | Where-Obj
 if ($portExists) { Write-Success "Serial port $Port is available" } else { Write-Warning "WARNING: Serial port $Port may not be available"; Write-Info "Available COM ports:"; Get-PnpDevice -Status OK | Where-Object { $_.Name -like "*(COM*)" } | ForEach-Object { Write-Info "  $($_.Name)" } }
 
 Write-Header "Running Hardware-in-the-Loop Tests"
-Write-Info "Command: $PythonExe `"$PythonScript`" --port $Port --baudrate $Baudrate"
+Write-Info "Command: $PythonExe `"$PythonScript`" --port $Port --baudrate $Baudrate --timeout $Timeout"
 
-$output = & $PythonExe $PythonScript --port $Port --baudrate $Baudrate 2>&1
+$pythonArgs = @('--port', $Port, '--baudrate', $Baudrate, '--timeout', $Timeout)
+if ($Verbose) { $pythonArgs += '--verbose' }
+
+$output = & $PythonExe $PythonScript @pythonArgs 2>&1
 
 $output | Tee-Object -FilePath $logFile
 
@@ -96,6 +104,7 @@ if ($failCount -eq 0 -or $failCount -eq $null) { Write-Success "All tests PASSED
 Write-Header "Test Summary"
 Write-Info "Port:            $Port"
 Write-Info "Baudrate:        $Baudrate bps"
+Write-Info "Timeout:         $Timeout s"
 Write-Info "Test Status:     $testStatus"
 Write-Info "Log File:        $logFile"
 Write-Info "Timestamp:       $timestamp"
