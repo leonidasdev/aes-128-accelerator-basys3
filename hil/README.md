@@ -44,10 +44,10 @@ Basys 3 FPGA
 
 | Command | Format | Response | Function |
 |---------|--------|----------|----------|
-| `K` (Key) | `K:<32-hex>\n` | `<32-hex>\n` | Load 128-bit master key; FPGA echoes hex string |
-| `M` (Mode) | `M:<0 or 1>\n` | `<0 or 1>\n` | Set mode (1=encrypt, 0=decrypt); echoes mode |
-| `D` (Data) | `D:<32-hex>\n` | `<32-hex>\n` | Load plaintext or ciphertext; FPGA echoes hex string |
-| `S` (Start) | `S\n` | `<32-hex>\n` | Execute AES operation; FPGA returns result (32-hex) |
+| `K` (Key) | `K:<32-hex>\n` | (no response) | Load 128-bit master key into FPGA |
+| `M` (Mode) | `M:<0 or 1>\n` | (no response) | Set mode (1=encrypt, 0=decrypt) |
+| `D` (Data) | `D:<32-hex>\n` | (no response) | Load plaintext or ciphertext |
+| `S` (Start) | `S\n` | `<32-hex>\n` | Execute AES operation; returns ciphertext/plaintext (32-hex) |
 
 **Data Encoding:**
 - Format: Hexadecimal strings (uppercase or lowercase accepted)
@@ -64,13 +64,13 @@ Basys 3 FPGA
 
 ```
 [Host]  K:000102030405060708090A0B0C0D0E0F
-[FPGA]  000102030405060708090A0B0C0D0E0F
+[FPGA]  (acknowledged, no echo)
 
 [Host]  M:1
-[FPGA]  1
+[FPGA]  (acknowledged, no echo)
 
 [Host]  D:00112233445566778899AABBCCDDEEFF
-[FPGA]  00112233445566778899AABBCCDDEEFF
+[FPGA]  (acknowledged, no echo)
 
 [Host]  S
 [FPGA]  69C4E0D86A7B0430D8CDB78070B4C55A
@@ -205,6 +205,115 @@ PowerShell script wrapper for batch test execution with logging and result captu
 
 # With verbose logging
 .\hil\run_hil_tests.ps1 -Port COM3 -Verbose
+```
+
+### send_single_encrypt.py
+
+Quick single-vector encryption test. Sends one AES encryption operation and verifies result.
+
+**Usage:**
+```powershell
+# Test with default FIPS-197 Vector 1
+python hil\python\send_single_encrypt.py --port COM6
+
+# Test with custom plaintext and key
+python hil\python\send_single_encrypt.py --port COM6 --key 2b7e151628aed2a6abf7158809cf4f3c --plaintext 6bc1bee22e409f96e93d7e117393172a
+
+# Check help for all options
+python hil\python\send_single_encrypt.py --help
+```
+
+**Expected Output:**
+```
+======================================================================
+AES-128 ENCRYPTION TEST (Single Vector)
+======================================================================
+Key:       000102030405060708090A0B0C0D0E0F
+Plaintext: 00112233445566778899AABBCCDDEEFF
+Expected:  69C4E0D86A7B0430D8CDB78070B4C55A
+======================================================================
+
+SEND: 'K:000102030405060708090A0B0C0D0E0F\n'
+SEND: 'M:1\n'
+SEND: 'D:00112233445566778899AABBCCDDEEFF\n'
+SEND: 'S\n'
+RECV: b'69C4E0D86A7B0430D8CDB78070B4C55A\n'
+
+======================================================================
+✓ PASS: Ciphertext matches expected value
+======================================================================
+```
+
+### send_single_decrypt.py
+
+Quick single-vector decryption test. Sends one AES decryption operation and verifies result.
+
+**Usage:**
+```powershell
+# Test with default FIPS-197 Vector 1
+python hil\python\send_single_decrypt.py --port COM6
+
+# Test with custom ciphertext and key
+python hil\python\send_single_decrypt.py --port COM6 --key 2b7e151628aed2a6abf7158809cf4f3c --ciphertext 3ad77bb40d7a3660a89ecaf32466ef97
+
+# Check help for all options
+python hil\python\send_single_decrypt.py --help
+```
+
+**Expected Output:**
+```
+======================================================================
+AES-128 DECRYPTION TEST (Single Vector)
+======================================================================
+Key:        000102030405060708090A0B0C0D0E0F
+Ciphertext: 69C4E0D86A7B0430D8CDB78070B4C55A
+Expected:   00112233445566778899AABBCCDDEEFF
+======================================================================
+
+SEND: 'K:000102030405060708090A0B0C0D0E0F\n'
+SEND: 'M:0\n'
+SEND: 'D:69C4E0D86A7B0430D8CDB78070B4C55A\n'
+SEND: 'S\n'
+RECV: b'00112233445566778899AABBCCDDEEFF\n'
+
+======================================================================
+✓ PASS: Plaintext matches expected value
+======================================================================
+```
+
+---
+
+## LED Status Indicators (Real-Time Feedback)
+
+When the FPGA is programmed with the HIL firmware (`basys3_top.vhd` with `uart_aes_controller`), all 16 Basys3 LEDs show live controller status:
+
+| LED | Pin | Signal | Behavior | Meaning |
+|-----|-----|--------|----------|---------|
+| LED15 | L1 | `aes_ready` | **Should be ON/steady** | FPGA ready to accept next command |
+| LED14 | P1 | `aes_done` | **Should PULSE** during S command | AES operation completed |
+| LED13 | N3 | `aes_error` | Should stay OFF | Error flag (should never see this in normal operation) |
+| LED12 | P3 | `aes_enc_dec` | **Should CHANGE** when M:0 or M:1 sent | 1 = encrypt mode, 0 = decrypt mode |
+
+**Troubleshooting LED Behavior:**
+
+- **LED15 OFF:** FPGA may not be ready or not programmed with correct bitstream. Reset the board (press U18 button) and wait 1 second.
+- **LED14 never pulses:** Check that S command is being sent and that AES core is responding. Verify bitstream is programmed.
+- **LED12 never changes:** Mode command may not be reaching the controller. Check UART connection and verify mode changes in send commands.
+- **LED13 ON:** AES core error detected. Review key/data format and verify FPGA build is clean (no synthesis errors).
+
+**Quick Test: Monitor LEDs During Single Operation**
+
+```powershell
+# In one window, monitor LED behavior visually on board
+
+# In another window:
+python hil\python\send_single_encrypt.py --port COM6 --verbose
+
+# Observe:
+#   1. LED15 ON (ready)
+#   2. Send M:1 -> LED12 should go ON (encrypt mode)
+#   3. Send S -> LED14 should pulse briefly (done)
+#   4. Result returned
 ```
 
 ---
