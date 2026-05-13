@@ -5,15 +5,14 @@ Validates FPGA AES implementation against NIST FIPS-197 reference implementation
 
 Protocol:
     Commands (host → FPGA):
-        K:<32-hex-chars>\n    Load 128-bit key
-        M:<0|1>\n              Set mode (1=encrypt, 0=decrypt)
-        D:<32-hex-chars>\n     Load 128-bit plaintext/ciphertext
-        S\n                    Execute and return 32-hex-char result
+        K:<32-hex-chars>\n    Load 128-bit key (no response)
+        M:<0|1>\n              Set mode (1=encrypt, 0=decrypt; no response)
+        D:<32-hex-chars>\n     Load 128-bit plaintext/ciphertext (no response)
+        S\n                    Execute AES; returns 32-hex-char result
 
     Responses (FPGA → host):
-        <32-hex-chars>\n       For K, D commands: echoes input
-                               For M command: echoes mode (0 or 1)
-                               For S command: returns result
+        For K, M, D commands:    No response; host must wait for command to be processed
+        For S command:           <32-hex-chars>\n = ciphertext or plaintext result
 
 Byte Order:
     Big-endian (network byte order); MSB transmitted first
@@ -24,7 +23,7 @@ Reference:
     NIST FIPS-197 AES specification validated via pycryptodome
 
 Usage:
-    python aes_hil_test.py --port COM3 --baudrate 115200 [--timeout 1.0] [--verbose]
+    python aes_hil_test.py --port COM6 --baudrate 115200 [--timeout 1.0] [--verbose]
 
 Requirements:
     pip install pycryptodome pyserial
@@ -36,6 +35,7 @@ import sys
 import argparse
 from pathlib import Path
 from typing import List, Tuple, Optional
+from datetime import datetime
 from Crypto.Cipher import AES
 import binascii
 
@@ -43,12 +43,12 @@ import binascii
 class AESHardwareTest:
     """Hardware-in-the-loop test controller for AES FPGA accelerator"""
     
-    def __init__(self, port: str = 'COM3', baudrate: int = 115200, timeout: float = 1.0, verbose: bool = False):
+    def __init__(self, port: str = 'COM6', baudrate: int = 115200, timeout: float = 1.0, verbose: bool = False):
         """
         Initialize UART connection to FPGA.
         
         Args:
-            port: Serial port (e.g., 'COM3' on Windows, '/dev/ttyUSB0' on Linux)
+            port: Serial port (e.g., 'COM6' on Windows, '/dev/ttyUSB0' on Linux)
             baudrate: UART baud rate (default: 115200 bps)
             timeout: UART read timeout in seconds (default: 1.0)
             verbose: Enable detailed logging (default: False)
@@ -466,19 +466,45 @@ class AESHardwareTest:
         return match
     
     def print_summary(self):
-        """Print test summary and exit with appropriate code."""
+        """Print test summary, write to log file, and return exit code."""
         total = self.pass_count + self.fail_count
         success_rate = (self.pass_count / total * 100) if total > 0 else 0
         
-        print("\n" + "="*70)
-        print("Test Summary")
-        print("="*70)
-        print(f"  Total:  {total}")
-        print(f"  Pass:   {self.pass_count}")
-        print(f"  Fail:   {self.fail_count}")
-        print(f"  Success Rate: {success_rate:.1f}%")
-        print("="*70 + "\n")
+        summary_lines = [
+            "\n" + "="*70,
+            "Test Summary",
+            "="*70,
+            f"  Total:  {total}",
+            f"  Pass:   {self.pass_count}",
+            f"  Fail:   {self.fail_count}",
+            f"  Success Rate: {success_rate:.1f}%",
+            "="*70 + "\n"
+        ]
         
+        # Print to stdout
+        for line in summary_lines:
+            print(line)
+        
+        # Write to log file
+        try:
+            results_dir = Path(__file__).parent.parent / "results"
+            results_dir.mkdir(parents=True, exist_ok=True)
+            
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            log_file = results_dir / f"hil_test_results_{timestamp}.txt"
+            
+            with open(log_file, 'w') as f:
+                f.write("AES-128 FPGA Hardware-in-the-Loop Test Results\n")
+                f.write(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                f.write(f"Port: {self.port_name}, Baudrate: {self.baudrate} bps\n")
+                f.write("\n".join(summary_lines))
+                
+            if self.verbose:
+                print(f"[LOG] Results saved to {log_file}")
+        except Exception as e:
+            print(f"WARNING: Could not write log file: {e}")
+        
+        # Print exit message
         if self.fail_count == 0:
             print("✓ All tests passed!")
             return 0
@@ -549,13 +575,13 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python aes_hil_test.py --port COM3
-  python aes_hil_test.py --port COM3 --baudrate 115200 --verbose
-  python aes_hil_test.py --port COM3 --vector-file test_vectors.txt
+  python aes_hil_test.py --port COM6
+  python aes_hil_test.py --port COM6 --baudrate 115200 --verbose
+  python aes_hil_test.py --port COM6 --vector-file test_vectors.txt
         """
     )
     
-    parser.add_argument('--port', default='COM3', help='Serial port (default: COM3)')
+    parser.add_argument('--port', default='COM6', help='Serial port (default: COM6)')
     parser.add_argument('--baudrate', type=int, default=115200, help='Baud rate (default: 115200)')
     parser.add_argument('--timeout', type=float, default=1.0, help='Serial read timeout in seconds (default: 1.0)')
     parser.add_argument('--vector-file', default=None, help='Path to test vector file (default: hil/vectors/test_vectors.txt)')
