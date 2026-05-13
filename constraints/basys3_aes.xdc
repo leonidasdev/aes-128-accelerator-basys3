@@ -6,7 +6,7 @@
 ## Project-specific top level in use: basys3_top
 ## Active ports in this project:
 ## - clk
-## - rst_n, start_btn
+## - rst, start_btn
 ## - mode_sw, vector_sel[2:0]
 ## - led[15:0]
 ## - seg[6:0], dp, an[3:0] (driven off in RTL)
@@ -51,8 +51,8 @@ create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk
 #	set_property IOSTANDARD LVCMOS33 [get_ports {sw[15]}]
 
 ## Buttons used by this design
-set_property PACKAGE_PIN U18 [get_ports rst_n]
-set_property IOSTANDARD LVCMOS33 [get_ports rst_n]
+set_property PACKAGE_PIN U18 [get_ports rst]
+set_property IOSTANDARD LVCMOS33 [get_ports rst]
 set_property PACKAGE_PIN T18 [get_ports start_btn]
 set_property IOSTANDARD LVCMOS33 [get_ports start_btn]
 

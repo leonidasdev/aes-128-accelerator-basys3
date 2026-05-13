@@ -24,7 +24,7 @@ use ieee.numeric_std.all;
 entity basys3_top is
     port (
         clk        : in  std_logic;
-        rst_n      : in  std_logic;
+        rst        : in  std_logic;
         rx         : in  std_logic;  -- USB-UART RX (host -> FPGA)
         tx         : out std_logic;  -- USB-UART TX (FPGA -> host)
         led_status : out std_logic_vector(15 downto 0)  -- Status LEDs (ready/done/error/mode)
@@ -49,7 +49,7 @@ begin
     u_uart_ctrl : uart_aes_controller
         port map (
             clk        => clk,
-            rst_n      => rst_n,
+            rst_n      => not rst,
             rx         => rx,
             tx         => tx,
             led_status => led_status
