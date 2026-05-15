@@ -1,20 +1,17 @@
 ----------------------------------------------------------------------------------
--- Test Bench Name: tb_aes_ldr_top
+-- Module Name:    tb_aes_ldr_top
 -- Project:        AES-128 Hardware Accelerator
 -- Author:         PHR26-T03
 -- Date:           15/05/2026
 --
 -- Description:
---   Testbench for ldr_sampler_fsm + aes_top integration.
---   Simulates:
---     1. XADC periodic reads every 5 seconds
---     2. ADC value padding and encryption
---     3. Result buffering
---   Uses mock XADC model (returns constant 12-bit ADC values)
+--   Integration testbench for ldr_sampler_fsm and aes_top. Tests autonomous periodic
+--   sampling at 5-second intervals with AES-128 encryption. Validates FSM state machine
+--   transitions, XADC read latency, plaintext padding with 12-bit ADC values, and
+--   end-to-end encryption functionality with mock XADC behavioral model.
 --
---   Note: Full aes_ldr_top simulation requires XADC IP behavioral model.
---   This testbench focuses on ldr_sampler_fsm FSM logic.
---
+--   Test coverage: 8 test cases including automatic sampling, manual triggers, state
+--   transitions, sample counting, and ciphertext validation.
 ----------------------------------------------------------------------------------
 
 library ieee;
@@ -26,10 +23,7 @@ end entity tb_aes_ldr_top;
 
 architecture sim of tb_aes_ldr_top is
 
-    -- =========================================================================
     -- Component Declarations
-    -- =========================================================================
-    
     component ldr_sampler_fsm
         port (
             clk           : in  std_logic;
@@ -65,10 +59,7 @@ architecture sim of tb_aes_ldr_top is
         );
     end component aes_top;
 
-    -- =========================================================================
     -- Test Signals
-    -- =========================================================================
-    
     signal clk : std_logic := '0';
     signal rst_n : std_logic := '0';
     signal manual_trigger : std_logic := '0';
@@ -106,10 +97,7 @@ architecture sim of tb_aes_ldr_top is
     
 begin
 
-    -- =========================================================================
     -- Clock Generation
-    -- =========================================================================
-    
     clk <= not clk after CLK_PERIOD / 2;
     
     process(clk)
@@ -119,11 +107,8 @@ begin
         end if;
     end process;
     
-    -- =========================================================================
     -- XADC Mock Model
-    -- =========================================================================
     -- Simulates XADC behavior: request → 2 cycles later, return valid data
-    
     process
         variable xadc_request_time : integer := 0;
         variable adc_counter : integer := 0;
@@ -149,10 +134,7 @@ begin
         end if;
     end process;
 
-    -- =========================================================================
     -- Instantiate LDR Sampler FSM
-    -- =========================================================================
-    
     u_sampler : ldr_sampler_fsm
         port map (
             clk           => clk,
@@ -172,10 +154,7 @@ begin
             sample_count  => sampler_count
         );
 
-    -- =========================================================================
     -- Instantiate AES Core
-    -- =========================================================================
-    
     u_aes : aes_top
         port map (
             clk      => clk,
@@ -190,10 +169,7 @@ begin
             error    => aes_error
         );
 
-    -- =========================================================================
     -- Main Test Process
-    -- =========================================================================
-    
     process
         variable sample_number : integer := 0;
         variable expected_plaintext : std_logic_vector(127 downto 0);
