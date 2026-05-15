@@ -1251,7 +1251,7 @@ C:\custom_venv\Scripts\Activate.ps1
 
 - **USB Micro-B**: Serial communication (UART via FTDI bridge)
 - **100 MHz Clock**: System clock input (pin W5)
-- **Constraints File**: `constraints/basys3_aes.xdc` (all I/O configured, only clock active)
+- **Constraints File**: `constraints/aes_hil_top.xdc` (all I/O configured, only clock active)
 
 ---
 

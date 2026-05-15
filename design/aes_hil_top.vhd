@@ -1,5 +1,5 @@
 ----------------------------------------------------------------------------------
--- Module Name:    basys3_top
+-- Module Name:    aes_hil_top
 -- Project:        AES-128 Hardware Accelerator
 -- Author:         PHR26-T03
 -- Date:           11/05/2026
@@ -12,16 +12,13 @@
 --   The `led_status` port is forwarded directly to the physical LEDs so
 --   the board shows ready/busy/error/mode state for visual feedback.
 --
---   Use this top for hardware HIL builds (serial-controlled FPGA image).
---   For demo / vector-button usage, keep the original demo top in the repo
---   under a different name if you still want it.
 ----------------------------------------------------------------------------------
 
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity basys3_top is
+entity aes_hil_top is
     port (
         clk        : in  std_logic;
         rst        : in  std_logic;
@@ -29,9 +26,9 @@ entity basys3_top is
         tx         : out std_logic;  -- USB-UART TX (FPGA -> host)
         led_status : out std_logic_vector(15 downto 0)  -- Status LEDs (ready/done/error/mode)
     );
-end entity basys3_top;
+end entity aes_hil_top;
 
-architecture rtl of basys3_top is
+architecture rtl of aes_hil_top is
 
     component uart_aes_controller
         port (
