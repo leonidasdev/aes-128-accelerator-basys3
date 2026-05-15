@@ -105,12 +105,7 @@ architecture rtl of aes_ldr_top is
             rst_n      : in  std_logic;
             rx         : in  std_logic;
             tx         : out std_logic;
-            led_status : out std_logic_vector(15 downto 0);
-            -- LDR interface (optional: for bridging sampler output to UART)
-            ldr_encrypted : in  std_logic_vector(127 downto 0);
-            ldr_adc_raw   : in  std_logic_vector(11 downto 0);
-            ldr_sample_ready : in  std_logic;
-            ldr_stored_key : out std_logic_vector(127 downto 0)
+            led_status : out std_logic_vector(15 downto 0)
         );
     end component uart_aes_controller;
 
@@ -139,6 +134,11 @@ architecture rtl of aes_ldr_top is
     signal stored_key : std_logic_vector(127 downto 0);
 
 begin
+
+    -- Initialize stored_key with default FIPS-197 test key
+    -- Note: v2.0 uses a fixed key for autonomous LDR sampling.
+    -- Future extensions can support dynamic key loading via UART.
+    stored_key <= x"000102030405060708090a0b0c0d0e0f";
 
     -- =========================================================================
     -- XADC IP Instance (Xilinx integrated ADC)
@@ -204,21 +204,20 @@ begin
         );
 
     -- =========================================================================
-    -- UART Controller (reused from existing design, with extensions)
+    -- UART Controller (reused from existing design, unmodified)
     -- =========================================================================
-    -- NOTE: uart_aes_controller needs to be modified to accept the ldr_* signals
-    -- For now, instantiate the existing version (original behavior preserved)
+    -- Note: uart_aes_controller remains unchanged for backward compatibility.
+    -- The LDR sampler FSM operates autonomously in parallel:
+    -- - Samples LDR every 5 seconds
+    -- - Encrypts each reading with pre-loaded key
+    -- - Buffers results (future extension: add UART readout or logging)
     u_uart_ctrl : uart_aes_controller
         port map (
             clk        => clk,
             rst_n      => not rst,
             rx         => rx,
             tx         => tx,
-            led_status => led_status,
-            ldr_encrypted => sampler_encrypted,      -- NEW: encrypted result from sampler
-            ldr_adc_raw   => sampler_adc_raw,        -- NEW: raw ADC value for UART logging
-            ldr_sample_ready => sampler_result_ready, -- NEW: flag when new sample ready
-            ldr_stored_key => stored_key              -- NEW: key loaded from UART
+            led_status => led_status
         );
 
 end architecture rtl;
