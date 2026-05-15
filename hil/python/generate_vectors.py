@@ -17,7 +17,7 @@ Usage:
     python generate_vectors.py [extra_random_vectors] [output_file]
 
     extra_random_vectors: optional number of random vectors to append (default: 0)
-    output_file: path to output file (default: test_vectors.txt)
+    output_file: path to output file (default: hil/vectors/test_vectors.txt)
 """
 
 import sys
@@ -85,7 +85,7 @@ def _append_random_vectors(vectors: List[Vector], count: int):
         vectors.append((plaintext.hex().upper(), ciphertext.hex().upper(), key.hex().upper()))
 
 
-def generate_vectors(extra_random_vectors=0, output_file="test_vectors.txt"):
+def generate_vectors(extra_random_vectors=0, output_file="hil/vectors/test_vectors.txt"):
     """
     Generate a comprehensive AES-128 regression vector file.
 
@@ -111,6 +111,9 @@ def generate_vectors(extra_random_vectors=0, output_file="test_vectors.txt"):
         output_path = Path(output_file)
         if not output_path.is_absolute():
             output_path = Path.cwd() / output_path
+
+        # Ensure parent directory exists (put vectors under hil/vectors by default)
+        output_path.parent.mkdir(parents=True, exist_ok=True)
 
         with output_path.open('w', encoding='utf-8') as f:
             f.write("# AES-128 Test Vectors\n")
@@ -138,7 +141,7 @@ def generate_vectors(extra_random_vectors=0, output_file="test_vectors.txt"):
 
 if __name__ == "__main__":
     extra_random_vectors = 0
-    output_file = "test_vectors.txt"
+    output_file = "hil/vectors/test_vectors.txt"
     
     if len(sys.argv) > 1:
         try:

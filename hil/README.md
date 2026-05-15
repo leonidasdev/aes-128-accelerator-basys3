@@ -285,7 +285,7 @@ RECV: b'00112233445566778899AABBCCDDEEFF\n'
 
 ## LED Status Indicators (Real-Time Feedback)
 
-When the FPGA is programmed with the HIL firmware (`basys3_top.vhd` with `uart_aes_controller`), all 16 Basys3 LEDs show live controller status:
+When the FPGA is programmed with the HIL firmware (`aes_hil_top.vhd` with `uart_aes_controller`), all 16 Basys3 LEDs show live controller status:
 
 | LED | Pin | Signal | Behavior | Meaning |
 |-----|-----|--------|----------|---------|
