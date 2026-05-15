@@ -75,6 +75,7 @@ begin
             sample_counter <= (others => '0');
             adc_value <= (others => '0');
             result_buffer <= (others => '0');
+            aes_data <= (others => '0');
             xadc_ready <= '0';
             aes_start <= '0';
             result_ready <= '0';
