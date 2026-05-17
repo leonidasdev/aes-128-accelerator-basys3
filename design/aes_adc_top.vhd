@@ -1,24 +1,26 @@
 ----------------------------------------------------------------------------------
--- Module Name:    aes_ldr_top
+-- Module Name:    aes_adc_top
 -- Project:        AES-128 Hardware Accelerator
 -- Author:         PHR26-T03
 -- Date:           15/05/2026
 --
 -- Description:
---   Top-level integration of LDR sensor with XADC and AES-128 encryption.
---   Samples analog voltage from LDR via Pmod JA (XADC channel 5).
+--   Top-level integration of analog sensor with XADC and AES-128 encryption.
+--   Samples analog voltage via XADC (12-bit integrated ADC on XC7A35T).
+--   Supports generic sensor inputs: LDR, temperature sensors, accelerometers,
+--   or any analog signal in the 0–1 V XADC range.
 --   Automatically encrypts each sample every 5 seconds.
 --   Transmits encrypted results to PC via UART.
 --
 --   Architecture:
---     XADC IP (hardmacro ADC) reads LDR voltage
---     ldr_sampler_fsm (control FSM) orchestrates periodic sampling
+--     XADC IP (hardmacro ADC) reads analog sensor voltage
+--     adc_sampler_fsm (control FSM) orchestrates periodic sampling (generic)
 --     aes_top (existing AES core) encrypts each reading
 --     uart_aes_controller (existing) handles UART communication
 --     Key is loaded once from PC, then reused for all samples
 --
---   Hardware Connections:
---     Pmod JA Pin 1 (XADC_CH5_P) = LDR + voltage divider
+--   Hardware Connections (example: LDR via Pmod JA):
+--     Pmod JA Pin 1 (XADC_CH5_P) = sensor analog output (0–1V)
 --     USB UART RX/TX = PC serial connection
 --     LED[15:0] = status indicators
 --
@@ -28,18 +30,18 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity aes_ldr_top is
+entity aes_adc_top is
     port (
         clk        : in  std_logic;                    -- 100 MHz system clock
         rst        : in  std_logic;                    -- async reset (active high)
         rx         : in  std_logic;                    -- USB UART RX
         tx         : out std_logic;                    -- USB UART TX
-        ldr_adc_in : in  std_logic;                    -- analog input from Pmod JA (XADC_CH5_P)
+        adc_in     : in  std_logic;                    -- analog input from Pmod JA (XADC_CH5_P)
         led_status : out std_logic_vector(15 downto 0) -- status LEDs
     );
-end entity aes_ldr_top;
+end entity aes_adc_top;
 
-architecture rtl of aes_ldr_top is
+architecture rtl of aes_adc_top is
 
     -- Active-low reset net for blocks using rst_n
     signal rst_n_i : std_logic;
@@ -62,12 +64,12 @@ architecture rtl of aes_ldr_top is
             eoc_out       : out std_logic;                        -- end of conversion
             eos_out       : out std_logic;                        -- end of sequence
             alarm_out     : out std_logic;                        -- temperature alarm
-            vauxp5        : in  std_logic;                        -- CH5 positive (LDR)
+            vauxp5        : in  std_logic;                        -- CH5 positive (sensor input)
             vauxn5        : in  std_logic                         -- CH5 negative (GND ref)
         );
     end component xadc_wiz_0;
 
-    component ldr_sampler_fsm
+    component adc_sampler_fsm
         port (
             clk           : in  std_logic;
             rst_n         : in  std_logic;
@@ -85,7 +87,7 @@ architecture rtl of aes_ldr_top is
             adc_raw       : out std_logic_vector(11 downto 0);
             sample_count  : out std_logic_vector(31 downto 0)
         );
-    end component ldr_sampler_fsm;
+    end component adc_sampler_fsm;
 
     component aes_top
         port (
@@ -117,7 +119,7 @@ architecture rtl of aes_ldr_top is
     signal xadc_valid : std_logic;
     signal xadc_ready : std_logic;
 
-    -- LDR sampler FSM signals (only AES start/data exchanged with AES core)
+    -- ADC sampler FSM signals (only AES start/data exchanged with AES core)
     signal sampler_aes_start : std_logic;
     signal sampler_aes_data : std_logic_vector(127 downto 0);
 
@@ -134,7 +136,7 @@ begin
     rst_n_i <= not rst;
 
     -- Initialize stored_key with default FIPS-197 test key
-    -- Note: v2.0 uses a fixed key for autonomous LDR sampling.
+    -- Note: v2.0 uses a fixed key for autonomous ADC sampling.
     -- Future extensions can support dynamic key loading via UART.
     stored_key <= x"000102030405060708090a0b0c0d0e0f";
 
@@ -158,14 +160,14 @@ begin
             eoc_out       => open,
             eos_out       => open,
             alarm_out     => open,
-            vauxp5        => ldr_adc_in,      -- LDR voltage divider output → CH5 positive
+            vauxp5        => adc_in,          -- Analog sensor input → CH5 positive
             vauxn5        => '0'              -- CH5 negative tied to GND (single-ended)
         );
 
     -- =========================================================================
-    -- LDR Sampler FSM (periodic read + encrypt every 5 seconds)
+    -- ADC Sampler FSM (periodic read + encrypt every 5 seconds)
     -- =========================================================================
-    u_sampler : ldr_sampler_fsm
+    u_sampler : adc_sampler_fsm
         port map (
             clk           => clk,
             rst_n         => rst_n_i,
@@ -205,8 +207,8 @@ begin
     -- UART Controller (reused from existing design, unmodified)
     -- =========================================================================
     -- Note: uart_aes_controller remains unchanged for backward compatibility.
-    -- The LDR sampler FSM operates autonomously in parallel:
-    -- - Samples LDR every 5 seconds
+    -- The ADC sampler FSM operates autonomously in parallel:
+    -- - Samples analog sensor every 5 seconds
     -- - Encrypts each reading with pre-loaded key
     -- - Buffers results (future extension: add UART readout or logging)
     u_uart_ctrl : uart_aes_controller
@@ -219,4 +221,3 @@ begin
         );
 
 end architecture rtl;
-

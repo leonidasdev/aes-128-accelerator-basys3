@@ -1,10 +1,11 @@
-## This file is a customized .xdc for the Basys3 rev B board with LDR-AES integration
-## Project-specific top level in use: aes_ldr_top
+## This file is a customized .xdc for the Basys3 rev B board with ADC-AES integration
+## Project-specific top level in use: aes_adc_top
+## Supports generic analog sensor inputs (LDR, temperature sensor, accelerometer, etc.)
 ## Active ports in this project:
 ## - clk
 ## - rst
 ## - rx, tx (USB UART)
-## - ldr_adc_in (XADC analog input via Pmod JA Pin 1)
+## - adc_in (XADC analog input via Pmod JA Pin 1, 0–1V range)
 ## - led_status[15:0]
 
 ## Clock signal
@@ -59,7 +60,9 @@ set_property IOSTANDARD LVCMOS33 [get_ports {led_status[14]}]
 set_property PACKAGE_PIN L1 [get_ports {led_status[15]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {led_status[15]}]
 
-## Pmod Header JA - ACTIVE (LDR sensor input on Pin 1 via XADC)
-##Sch name = JA1 (XADC_CH5_P - LDR analog input with voltage divider)
-set_property PACKAGE_PIN J1 [get_ports ldr_adc_in]
-set_property IOSTANDARD ANALOG [get_ports ldr_adc_in]
+## Pmod Header JA - ACTIVE (Analog sensor input on Pin 1 via XADC)
+## Sch name = JA1 (XADC_CH5_P - analog input with optional voltage divider)
+## Supports various sensors: LDR, temperature sensor, accelerometer, etc.
+## Voltage range: 0–1V (XADC single-ended input)
+set_property PACKAGE_PIN J1 [get_ports adc_in]
+set_property IOSTANDARD ANALOG [get_ports adc_in]

@@ -1,13 +1,15 @@
 ----------------------------------------------------------------------------------
--- Module Name:    ldr_sampler_fsm
+-- Module Name:    adc_sampler_fsm
 -- Project:        AES-128 Hardware Accelerator
 -- Author:         PHR26-T03
 -- Date:           15/05/2026
 --
 -- Description:
---   Periodic LDR sampling controller using integrated XADC.
---   Samples analog voltage from LDR+voltage-divider every 5 seconds.
+--   Periodic analog sensor (ADC) sampling controller using integrated XADC.
+--   Samples analog voltage from ADC input every 5 seconds.
 --   Encrypts each reading with AES-128 and buffers result for UART transmission.
+--   Generic sensor input: supports LDR, temperature sensors, accelerometers, or any
+--   12-bit ADC value from the Xilinx XADC hardmacro.
 --
 --   Timing:
 --     - XADC read latency: ~26 cycles @ 100 MHz = 0.26 µs
@@ -23,7 +25,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity ldr_sampler_fsm is
+entity adc_sampler_fsm is
     generic (
         -- Number of clock cycles for the sampling timer at the design clock frequency
         -- Default: 500,000,000 cycles = 5 seconds @ 100 MHz
@@ -56,9 +58,9 @@ entity ldr_sampler_fsm is
         adc_raw       : out std_logic_vector(11 downto 0);   -- raw 12-bit ADC value
         sample_count  : out std_logic_vector(31 downto 0)    -- total samples captured
     );
-end entity ldr_sampler_fsm;
+end entity adc_sampler_fsm;
 
-architecture rtl of ldr_sampler_fsm is
+architecture rtl of adc_sampler_fsm is
 
     type t_state is (ST_IDLE, ST_TIMER_RUNNING, ST_READ_ADC, ST_START_AES, ST_WAIT_AES, ST_BUFFER_RESULT);
 
