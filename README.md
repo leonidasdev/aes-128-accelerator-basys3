@@ -6,7 +6,7 @@
 
 This project implements a NIST FIPS-197 compliant AES-128 hardware accelerator in VHDL for the Basys 3 development board. The design focuses on a clear embedded-systems architecture: a reusable AES core, a small control FSM, deterministic key expansion, self-checking simulation testbenches, and hardware-in-the-loop validation from a host PC.
 
-**v2.0 Feature:** Optional integrated LDR sensor sampling with autonomous 5-second periodic encryption (see [Section 10](#10-ldr-sensor-integration)).
+**v0.0.2 Feature:** Optional integrated analog sensor sampling with autonomous 5-second periodic encryption using XADC ADC (see [Section 8](#8-analog-sensor-adc-integration)).
 
 The intent is to show a complete engineering flow rather than a line-by-line source commentary. The README therefore explains the system architecture, the role of each VHDL module, the verification strategy, and the HIL workflow.
 
@@ -31,7 +31,7 @@ The intent is to show a complete engineering flow rather than a line-by-line sou
 5. [Hardware-in-the-Loop Testing](#5-hardware-in-the-loop-testing)
 6. [Synthesis and Constraints](#6-synthesis-and-constraints)
 7. [Performance Summary](#7-performance-summary)
-8. [LDR Sensor Integration](#8-ldr-sensor-integration) (v2.0 feature)
+8. [Analog Sensor ADC Integration](#8-analog-sensor-adc-integration) (v0.0.2 feature)
 9. [Getting Started](#9-getting-started)
 10. [References](#10-references)
 11. [Test Coverage Matrix](#11-test-coverage-matrix)
@@ -61,7 +61,8 @@ For this project, the important point is not only the device capacity but also t
 - The onboard USB-UART bridge makes HIL testing straightforward.
 - The 100 MHz oscillator matches the intended clock target.
 - The board is common in teaching and prototyping, which makes the design easy to reproduce.
- - [add_round_key.vhd](design/transformations/add_round_key.vhd)
+
+## 2. Architecture Overview
 
 ### 2.1 High-Level Data Flow
 
@@ -128,6 +129,11 @@ The primitive transformations are implemented as separate VHDL blocks under [des
 
 - [mix_columns.vhd](design/transformations/mix_columns.vhd)
 - [inv_mix_columns.vhd](design/transformations/inv_mix_columns.vhd)
+- [sub_bytes.vhd](design/transformations/sub_bytes.vhd)
+- [inv_sub_bytes.vhd](design/transformations/inv_sub_bytes.vhd)
+- [shift_rows.vhd](design/transformations/shift_rows.vhd)
+- [inv_shift_rows.vhd](design/transformations/inv_shift_rows.vhd)
+- [add_round_key.vhd](design/transformations/add_round_key.vhd)
 
 Role:
 - Each block implements one AES primitive.
@@ -137,9 +143,12 @@ Why they are separate:
 - Each transformation can be unit-tested independently.
 - Separate blocks make simulation failure localization much easier.
 - The design remains close to the AES specification while still being synthesizable.
+
 ### 3.6 Testbenches
 
 The testbenches under [simulation/testbenches](simulation/testbenches) verify each functional block and the full system.
+
+Note: some benches run long enough that Vivado may stop before every testcase completes. If that happens, open Vivado Settings, go to Simulation, and increase the Simulation Runtime so the full test sequence can finish.
 
 | Testbench | Purpose |
 |---|---|
@@ -151,6 +160,7 @@ The testbenches under [simulation/testbenches](simulation/testbenches) verify ea
 | [tb_inv_mix_columns.vhd](simulation/testbenches/tb_inv_mix_columns.vhd) | Verifies inverse column mixing |
 | [tb_key_expansion.vhd](simulation/testbenches/tb_key_expansion.vhd) | Verifies round-key generation |
 | [tb_aes_top.vhd](simulation/testbenches/tb_aes_top.vhd) | Verifies end-to-end encryption, decryption, and round-trip behavior |
+| [tb_aes_datapath.vhd](simulation/testbenches/tb_aes_datapath.vhd) | Verifies datapath load, AddRoundKey and hold behavior |
 
 - They make regression testing practical.
 - They let each module be validated against known vectors before full integration.
@@ -232,7 +242,7 @@ HIL testing validates the synthesized bitstream on actual hardware against a tru
    - Validates command formatting, response parsing, error handling
    - Uses mock FPGA responses
    - Useful for CI/CD and offline validation
-   - Status: Implemented in `hil/python/mock_fpga_controller.py` and `hil/python/test_aes_hil_mock.py`
+   - Status: Implemented in `hil/python/mock_aes_hil.py` and `hil/python/test_aes_hil_mock.py`
 
 **Quick Start:**
 
@@ -334,11 +344,11 @@ The design is therefore best viewed as a balanced embedded implementation, not a
 
 ---
 
-## 8. LDR Sensor Integration
+## 8. Analog Sensor ADC Integration
 
-### 8.1 Overview (v2.0 Feature)
+### 8.1 Overview (v0.0.2 Feature)
 
-The AES-128 accelerator now includes an optional **autonomous LDR (Light Dependent Resistor) sensor** integration that periodically samples ambient light and encrypts the readings. This feature demonstrates practical embedded system design: integrating a sensor, discretizing analog data, and applying cryptography to IoT-like telemetry.
+The AES-128 accelerator now includes an optional **autonomous analog sensor sampling** using the integrated XADC (12-bit ADC on XC7A35T). The design is generic: supports any sensor (LDR, temperature, accelerometer, etc.) that outputs 0–1V. Samples are encrypted every 5 seconds. This feature demonstrates practical embedded system design: integrating sensors, discretizing analog data, and applying cryptography to IoT-like telemetry.
 
 **Key Characteristics:**
 - **Sampling Period:** Every 5 seconds (configurable)
@@ -373,23 +383,23 @@ All values safely within XADC 0–1 V range.
 
 ### 8.3 FPGA Implementation
 
-**New Files (v2.0):**
-- [design/ldr_sampler_fsm.vhd](design/ldr_sampler_fsm.vhd) — Autonomous 5-second sampling FSM
-- [design/aes_ldr_top.vhd](design/aes_ldr_top.vhd) — Top-level integration wrapper
-- [constraints/aes_ldr_top.xdc](constraints/aes_ldr_top.xdc) — Pin constraints for LDR mode
-- [simulation/testbenches/tb_aes_ldr_top.vhd](simulation/testbenches/tb_aes_ldr_top.vhd) — Integration testbench
+**New Files (v0.0.2):**
+- [design/adc_sampler_fsm.vhd](design/adc_sampler_fsm.vhd) — Autonomous 5-second ADC sampling FSM (generic, sensor-agnostic)
+- [design/aes_adc_top.vhd](design/aes_adc_top.vhd) — Top-level integration wrapper (XADC + sampler + AES)
+- [constraints/aes_adc_top.xdc](constraints/aes_adc_top.xdc) — Pin constraints for ADC mode
+- [simulation/testbenches/tb_aes_adc_top.vhd](simulation/testbenches/tb_aes_adc_top.vhd) — Integration testbench
 
 **Data Flow:**
 ```
-LDR voltage → XADC (12-bit ADC) → ldr_sampler_fsm (every 5 sec)
-                                      ↓
-                           Pad to 128-bit plaintext
-                                      ↓
-                           aes_top (encrypt)
-                                      ↓
-                           uart_aes_controller (UART TX)
-                                      ↓
-                           PC receives encrypted reading
+Analog sensor (0–1V) → XADC (12-bit ADC) → adc_sampler_fsm (every 5 sec)
+                                              ↓
+                                 Pad to 128-bit plaintext
+                                              ↓
+                                 aes_top (encrypt)
+                                              ↓
+                                 uart_aes_controller (UART TX)
+                                              ↓
+                                 PC receives encrypted reading
 ```
 
 ### 8.4 Selecting the Configuration
@@ -398,10 +408,11 @@ LDR voltage → XADC (12-bit ADC) → ldr_sampler_fsm (every 5 sec)
 - Top module: `aes_hil_top` + `aes_hil_top.xdc`
 - No sensor, no XADC, original behavior preserved
 
-- **LDR+AES Mode (v2.0):**
-- Top module: `aes_ldr_top` + `aes_ldr_top.xdc`
-- Integrates XADC + sampler FSM + AES core
+**ADC+AES Mode (v0.0.2) — Generic Analog Sensor:**
+- Top module: `aes_adc_top` + `aes_adc_top.xdc`
+- Integrates XADC + ADC sampler FSM + AES core
 - Autonomous sampling every 5 seconds
+- Works with any analog sensor (LDR, temperature, pressure, etc.)
 
 Both configurations coexist; choose the one you need in Vivado project settings.
 
@@ -413,18 +424,18 @@ Both configurations coexist; choose the one you need in Vivado project settings.
    - Configure: Enable VAUXP[5]/VAUXN[5] (for Pmod JA), Continuous sampling, 1 MSPS
    - Generate → produces `xadc_wiz_0.vhd`
 
-2. **Add LDR files to Vivado project:**
-   - Source files: `ldr_sampler_fsm.vhd`, `aes_ldr_top.vhd`
-   - Constraint files: `aes_ldr_top.xdc`
+2. **Add ADC sampling files to Vivado project:**
+   - Source files: `adc_sampler_fsm.vhd`, `aes_adc_top.vhd`
+   - Constraint files: `aes_adc_top.xdc`
 
-3. **Set top module to `aes_ldr_top`**
+3. **Set top module to `aes_adc_top`**
 
 4. **Synthesize & Implement → Generate bitstream**
 
 5. **Program FPGA and test:**
    ```powershell
-   # Run LDR monitoring script (see section 8.7)
-   python hil/python/ldr_monitor.py --port COM6
+   # Run ADC monitoring script (see section 8.7)
+   python hil/python/adc_monitor.py --port COM6  # (script name unchanged for backward compat)
    ```
 
 ### 8.6 PC Integration (Python Example)
@@ -455,23 +466,23 @@ for i in range(10):
 ser.close()
 ```
 
-For detailed PC integration, use [hil/python/ldr_monitor.py](hil/python/ldr_monitor.py) and the workflow in this section.
+For detailed PC integration, use [hil/python/adc_monitor.py](hil/python/adc_monitor.py) (supports generic ADC values, not LDR-specific) and the workflow in this section.
 
 ### 8.7 Simulation
 
-Verify LDR+AES integration before hardware:
+Verify ADC+AES integration before hardware:
 
 ```tcl
 # In Vivado Simulator
 open_project <your_project>
-add_files simulation/testbenches/tb_aes_ldr_top.vhd
-set_property top tb_aes_ldr_top [current_fileset]
+add_files simulation/testbenches/tb_aes_adc_top.vhd
+set_property top tb_aes_adc_top [current_fileset]
 run_all
 ```
 
 Testbench includes mock XADC model and tests:
-- 5-second timer triggering correctly
-- XADC read latency (~26 cycles)
+- 5-second timer triggering correctly (configurable via generic)
+- XADC read latency (~26 cycles, realistic behavioral model)
 - Plaintext padding (ADC value to 128-bit block)
 - AES encryption
 - Sample counter incrementing
@@ -489,7 +500,7 @@ A\n             → Get last raw ADC value (12-bit)
 X:<cycles>\n    → Set custom sampling period (in 100 MHz cycles)
 ```
 
-This requires modifying `uart_aes_controller.vhd` to accept LDR signals.
+This requires modifying `uart_aes_controller.vhd` to accept ADC sampler signals.
 
 ---
 
@@ -520,6 +531,44 @@ If your laptop has only USB-C ports, then you should use a USB-C to micro-USB da
 
 ---
 
+### 9.4 Vivado Quick-Start
+
+Follow these concise steps to import the project into Xilinx Vivado, add the XADC IP, and build a Basys 3 bitstream.
+
+1. Open Vivado → Create New Project → choose "RTL Project" and click Next.
+2. Project name/location: pick a folder and name (e.g., "aes_vivado"). Keep "Do not specify sources at this time" unchecked so you can add sources.
+3. Default Part: select "Boards" → search "Basys 3" or select the part directly: `XC7A35TICPG236-1L`.
+4. Add Sources:
+   - Add all VHDL sources from the `design/` folder (top-level wrappers, FSM, datapath, transformations).
+   - Add any Block Design files if used.
+5. Add Constraints:
+   - Add the constraint file `constraints/aes_hil_top.xdc` for AES-only builds, or `constraints/aes_adc_top.xdc` when building ADC+AES (sensor) mode.
+6. Add Simulation Files (optional):
+   - Add testbenches from `simulation/testbenches/` if you want to run behavioral simulations in Vivado.
+7. Set the Top Module:
+   - For normal HIL operation choose `aes_hil_top` (design/aes_hil_top.vhd).
+   - For ADC+AES autonomous sampling choose `aes_adc_top` (design/aes_adc_top.vhd).
+   After adding sources, right-click the desired top file and select "Set as Top".
+8. Add XADC IP (for ADC board integration):
+   - Open the IP Catalog and search for "XADC" or "XADC Wizard".
+   - Double-click the IP to add it to the project, then click "Customize IP".
+   - In the customization GUI enable the Channel Sequencer / Startup Channel Selection feature.
+   - Add `Vaux5` to the startup sequence (this maps to the external analog input used by the sampler FSM).
+   - Generate the output products for the IP (click "Generate Block Design" or "Generate Output Products" as required).
+9. Integrate IP & connections:
+   - If using a block design, instantiate the XADC block and connect its ports to your top-level wrapper signals (or use the provided `aes_adc_top` which already instantiates XADC).
+   - Ensure any required IP (AXI, if used) has its output products generated.
+10. Build flow:
+   - Run Synthesis, Implementation, and then Generate Bitstream.
+   - Program the device via "Open Hardware Manager" → "Program Device".
+
+Notes:
+- The exact mapping of `Vaux5` to board pins depends on the Basys 3 pinout and the Pmod header you use; double-check the `aes_adc_top.xdc` constraint file and update it if necessary to point the analog input to the physical Pmod pin carrying the sensor voltage (typically Pmod JA pin 1 → Vaux5 via suitable wiring).
+- If you see timing or placement congestions, try building with the smaller top (`aes_hil_top`) first to confirm basic functionality, then enable ADC integration.
+- When adding XADC via the IP Catalog, Vivado may require you to connect the `vp`/`vn` analog pins or to enable auxiliary channels (Vaux). The XADC Wizard customization UI explains the mapping; choose `Vaux5` in the startup sequencer as requested.
+
+---
+
 ## 10. References
 
 - NIST FIPS-197, Advanced Encryption Standard (AES)
@@ -539,17 +588,19 @@ If your laptop has only USB-C ports, then you should use a USB-C to micro-USB da
 
 | Testbench | Module | Purpose | Test Count | Expected Result |
 |-----------|--------|---------|-----------|-----------------|
-| [tb_sub_bytes.vhd](simulation/testbenches/tb_sub_bytes.vhd) | sub_bytes | Verify forward S-box on all 256 values | 256 | All PASS ✓ |
-| [tb_inv_sub_bytes.vhd](simulation/testbenches/tb_inv_sub_bytes.vhd) | inv_sub_bytes | Verify inverse S-box correctness | 256 | All PASS ✓ |
-| [tb_shift_rows.vhd](simulation/testbenches/tb_shift_rows.vhd) | shift_rows | Verify forward byte rotation | 1 | PASS ✓ |
-| [tb_inv_shift_rows.vhd](simulation/testbenches/tb_inv_shift_rows.vhd) | inv_shift_rows | Verify inverse byte rotation | 1 | PASS ✓ |
-| [tb_mix_columns.vhd](simulation/testbenches/tb_mix_columns.vhd) | mix_columns | Verify forward column GF(2^8) mixing | 1 | PASS ✓ |
-| [tb_inv_mix_columns.vhd](simulation/testbenches/tb_inv_mix_columns.vhd) | inv_mix_columns | Verify inverse column mixing | 1 | PASS ✓ |
-| [tb_add_round_key.vhd](simulation/testbenches/tb_add_round_key.vhd) | add_round_key | Verify state XOR round key | 1 | PASS ✓ |
+| [tb_sub_bytes.vhd](simulation/testbenches/transformations/tb_sub_bytes.vhd) | sub_bytes | Verify forward S-box on all 256 values | 256 | All PASS ✓ |
+| [tb_inv_sub_bytes.vhd](simulation/testbenches/transformations/tb_inv_sub_bytes.vhd) | inv_sub_bytes | Verify inverse S-box correctness | 256 | All PASS ✓ |
+| [tb_shift_rows.vhd](simulation/testbenches/transformations/tb_shift_rows.vhd) | shift_rows | Verify forward byte rotation | 1 | PASS ✓ |
+| [tb_inv_shift_rows.vhd](simulation/testbenches/transformations/tb_inv_shift_rows.vhd) | inv_shift_rows | Verify inverse byte rotation | 1 | PASS ✓ |
+| [tb_mix_columns.vhd](simulation/testbenches/transformations/tb_mix_columns.vhd) | mix_columns | Verify forward column GF(2^8) mixing | 1 | PASS ✓ |
+| [tb_inv_mix_columns.vhd](simulation/testbenches/transformations/tb_inv_mix_columns.vhd) | inv_mix_columns | Verify inverse column mixing | 1 | PASS ✓ |
+| [tb_add_round_key.vhd](simulation/testbenches/transformations/tb_add_round_key.vhd) | add_round_key | Verify state XOR round key | 1 | PASS ✓ |
+| [tb_aes_datapath.vhd](simulation/testbenches/tb_aes_datapath.vhd) | aes_datapath | Verify state/key load, AddRoundKey, hold behavior | 3 | PASS/FAIL ✓ |
+| [tb_adc_sampler_fsm.vhd](simulation/testbenches/tb_adc_sampler_fsm.vhd) | adc_sampler_fsm | Verify ADC sampling, padding, AES handshake, buffering | 5 | PASS/FAIL ✓ |
 | [tb_key_expansion.vhd](simulation/testbenches/tb_key_expansion.vhd) | key_expansion | Verify round key generation (all 11 rounds) | 22 | All PASS ✓ |
 | [tb_aes_top.vhd](simulation/testbenches/tb_aes_top.vhd) | aes_top (integration) | Verify end-to-end AES encrypt/decrypt | 31 | All PASS ✓ |
 | [tb_uart_aes_controller.vhd](simulation/testbenches/tb_uart_aes_controller.vhd) | uart_aes_controller | Verify UART command parsing & FPGA orchestration | 4 | All PASS ✓ |
-| **[tb_aes_ldr_top.vhd](simulation/testbenches/tb_aes_ldr_top.vhd)** | **ldr_sampler_fsm + aes_top (NEW v2.0)** | **Verify periodic sampling + encryption** | **8** | **All PASS ✓** |
+| **[tb_aes_adc_top.vhd](simulation/testbenches/tb_aes_adc_top.vhd)** | **adc_sampler_fsm + aes_top (NEW v0.0.2)** | **Verify periodic sampling + encryption** | **8** | **All PASS ✓** |
 
 **Simulation Totals:** 580+ unit tests + integration tests
 
@@ -565,12 +616,12 @@ If your laptop has only USB-C ports, then you should use a USB-C to micro-USB da
 
 **Total HIL Tests:** 792 tests on hardware + 792 on mock framework
 
-### 11.3 Integration Test Coverage (v2.0 with LDR)
+### 11.3 Integration Test Coverage (v0.0.2 with ADC)
 
 | Component | Test Scenario | Coverage |
 |-----------|---|---|
 | **XADC** | ADC read latency, 12-bit resolution validation | ✓ Behavioral sim |
-| **LDR Sampler FSM** | 5-second timer, state transitions, plaintext padding | ✓ tb_aes_ldr_top.vhd |
+| **ADC Sampler FSM** | 5-second timer, state transitions, plaintext padding | ✓ tb_aes_adc_top.vhd |
 | **AES Core** | Encryption of padded ADC values | ✓ Reused from v1.x |
 | **UART Controller** | Key loading, result transmission | ✓ Reused from v1.x |
 | **End-to-End** | Sensor → Encrypt → Transmit → PC | ✓ Hardware validation |
@@ -582,8 +633,8 @@ If your laptop has only USB-C ports, then you should use a USB-C to micro-USB da
 -- `aes_hil_top` + `aes_hil_top.xdc` configuration unmodified
 - Existing HIL suite (792 tests) still validates AES core
 
-**New tests added (v2.0):**
--- `tb_aes_ldr_top.vhd` validates LDR+AES integration
+**New tests added (v0.0.2):**
+-- `tb_aes_adc_top.vhd` validates ADC+AES integration
 - No breaking changes to existing modules
 
 ### 11.5 Test Execution Commands
@@ -618,15 +669,15 @@ ghdl -r tb_aes_top --vcd=tb_aes_top.vcd
 python hil/python/send_single_encrypt.py --port COM6
 ```
 
-**Hardware (LDR+AES - v2.0):**
+**Hardware (LDR+AES - v0.0.2):**
 ```powershell
-# Monitor LDR samples (5-second interval)
-python hil/python/ldr_monitor.py --port COM6 --duration 60
+# Monitor ADC samples (5-second interval)
+python hil/python/adc_monitor.py --port COM6 --duration 60
 ```
 
 ### 11.6 Coverage Summary
 
-| Category | v1.x | v2.0 Added | Total |
+| Category | v1.x | v0.0.2 Added | Total |
 |----------|------|-----------|-------|
 | **Unit tests** | 580+ | +8 | 588+ |
 | **Integration tests** | 792 (HIL) | +hardware validation | 792+ |
@@ -637,8 +688,8 @@ python hil/python/ldr_monitor.py --port COM6 --duration 60
 
 ---
 
-**Project Status:** All tests passing (simulation + hardware v1.x). LDR v2.0 feature ready for integration and testing.  
+**Project Status:** All tests passing (simulation + hardware v1.x). LDR v0.0.2 feature ready for integration and testing.  
 **Primary Top-Level:** `aes_hil_top.vhd` (AES-only, backward compatible)  
-**LDR Top-Level:** `aes_ldr_top.vhd` (AES + autonomous LDR sampling)  
+**LDR Top-Level:** `aes_adc_top.vhd` (AES + autonomous LDR sampling)  
 **License:** MIT  
 **Last Updated:** May 15, 2026

@@ -388,11 +388,17 @@ The mock HIL framework allows testing the Python test controller without actual 
 
 ### Mock FPGA Components
 
-**mock_fpga_controller.py** — Simulates the Basys 3 AES FPGA
+**mock_aes_hil.py** — Simulates the Basys 3 AES FPGA
 - Implements the same ASCII command-response protocol
 - Performs real AES-128 encryption/decryption via pycryptodome
 - Supports fault injection (timeout, malformed response, disconnect)
 - Drop-in replacement for serial port
+
+**mock_aes_adc.py** — Simulates the autonomous ADC sample stream
+- Emits encrypted ADC samples after key load
+- Lets `adc_monitor.py` run without FPGA hardware
+- Covers the PC-facing ADC-to-UART path end to end
+- Useful for testing CSV output and plaintext recovery
 
 **test_aes_hil_mock.py** — Unit tests for Python framework
 - Tests command transmission and response parsing
@@ -400,6 +406,12 @@ The mock HIL framework allows testing the Python test controller without actual 
 - Tests full workflows (encryption, decryption, round-trip)
 - Tests all FIPS-197 canonical vectors
 - No external dependencies; runs in seconds
+
+**test_aes_adc_mock.py** — Integration tests for the ADC monitor
+- Verifies key loading and sample capture
+- Checks ciphertext decryption and ADC value extraction
+- Validates CSV output from the monitor workflow
+- Runs entirely against the ADC mock stream
 
 ### Running Mock Tests
 
@@ -410,22 +422,29 @@ The mock HIL framework allows testing the Python test controller without actual 
 .\.venv\Scripts\Activate.ps1
 
 # Run mock FPGA self-test
-python hil\python\mock_fpga_controller.py
+python hil\python\mock_aes_hil.py
+
+# Run ADC stream mock self-test
+python hil\python\mock_aes_adc.py
 
 # Run full unit test suite (pytest recommended)
 python -m pytest hil\python\test_aes_hil_mock.py -v
 
+# Run ADC monitor integration tests
+python -m unittest hil\python\test_aes_adc_mock.py -v
+
 # Or run tests directly
 python hil\python\test_aes_hil_mock.py
+python hil\python\test_aes_adc_mock.py
 ```
 
 **Expected Output:**
 
 ```
-test_aes_hil_mock.py::TestMockFPGAController::test_key_load PASSED
-test_aes_hil_mock.py::TestMockFPGAController::test_mode_encrypt PASSED
-test_aes_hil_mock.py::TestMockFPGAController::test_encryption_fips197_vector1 PASSED
-test_aes_hil_mock.py::TestMockFPGAController::test_timeout_injection PASSED
+test_aes_hil_mock.py::TestMockAESHILController::test_key_load PASSED
+test_aes_hil_mock.py::TestMockAESHILController::test_mode_encrypt PASSED
+test_aes_hil_mock.py::TestMockAESHILController::test_encryption_fips197_vector1 PASSED
+test_aes_hil_mock.py::TestMockAESHILController::test_timeout_injection PASSED
 test_aes_hil_mock.py::TestAESHardwareTestWithMock::test_encryption_workflow PASSED
 test_aes_hil_mock.py::TestAESHardwareTestWithMock::test_decryption_workflow PASSED
 test_aes_hil_mock.py::TestAESHardwareTestWithMock::test_roundtrip_workflow PASSED
@@ -437,13 +456,13 @@ test_aes_hil_mock.py::TestAESHardwareTestWithMock::test_roundtrip_workflow PASSE
 ### Using Mock FPGA in Custom Tests
 
 ```python
-from mock_fpga_controller import MockFPGAController, MockSerialPort
+from mock_aes_hil import MockAESHILController, MockAESHILSerialPort
 from aes_hil_test import AESHardwareTest
 from unittest.mock import patch
 
 # Create mock FPGA
-mock_fpga = MockFPGAController(verbose=True)
-mock_port = MockSerialPort(mock_fpga=mock_fpga)
+mock_fpga = MockAESHILController(verbose=True)
+mock_port = MockAESHILSerialPort(mock_fpga=mock_fpga)
 
 # Use with AESHardwareTest
 with patch('aes_hil_test.serial.Serial', return_value=mock_port):
@@ -490,9 +509,12 @@ mock_fpga.reset_faults()
 ```
 hil/python/
 ├── aes_hil_test.py              # Main test controller (hardware or mock)
+├── adc_monitor.py               # ADC monitor and decryptor
+├── mock_aes_adc.py              # Mock ADC stream simulator
 ├── generate_vectors.py          # Vector generation utility
-├── mock_fpga_controller.py       # Mock FPGA simulator (NEW)
-├── test_aes_hil_mock.py         # Unit tests with mock (NEW)
+├── mock_aes_hil.py               # Mock AES HIL simulator (NEW)
+├── test_aes_adc_mock.py          # ADC monitor integration tests (NEW)
+├── test_aes_hil_mock.py          # Unit tests with mock (NEW)
 └── __init__.py                  # Package marker (optional)
 ```
 
