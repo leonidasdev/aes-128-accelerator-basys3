@@ -32,7 +32,7 @@ param(
     [string]$Port = "COM6",
     [int]$Baudrate = 115200,
     [double]$Timeout = 1.0,
-    [string]$LogDir = ".\hil\results",
+    [string]$LogDir = "results",
     [switch]$Verbose
 )
 
@@ -41,6 +41,10 @@ $RepoRoot = Split-Path -Parent $ScriptRoot
 $PythonScript = Join-Path $ScriptRoot "python\aes_hil_test.py"
 $VenvPython = Join-Path $RepoRoot ".venv\Scripts\python.exe"
 $PythonExe = if (Test-Path $VenvPython) { $VenvPython } else { "python" }
+
+if (-not [System.IO.Path]::IsPathRooted($LogDir)) {
+    $LogDir = Join-Path $ScriptRoot $LogDir
+}
 
 function Write-Header { param([string]$Text) Write-Host ""; Write-Host "=" * 80 -ForegroundColor Cyan; Write-Host $Text -ForegroundColor Cyan; Write-Host "=" * 80 -ForegroundColor Cyan }
 function Write-Success { param([string]$Text) Write-Host $Text -ForegroundColor Green }
