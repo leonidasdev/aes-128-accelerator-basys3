@@ -25,7 +25,7 @@ The intent is to show a complete engineering flow rather than a line-by-line sou
 1. [Platform and Device](#1-platform-and-device)
 2. [Architecture Overview](#2-architecture-overview)
 3. [VHDL Module Roles](#3-vhdl-module-roles)
-4. [Verification Strategy](#4-verification-strategy)
+4. [Current Verification Status](#4-current-verification-status)
 5. [Hardware-in-the-Loop Testing](#5-hardware-in-the-loop-testing)
 6. [Synthesis and Constraints](#6-synthesis-and-constraints)
 7. [Performance Summary](#7-performance-summary)
@@ -569,7 +569,7 @@ Notes:
 
 ## 10. Test Coverage Matrix
 
-### 11.1 Simulation Testbenches
+### 10.1 Simulation Testbenches
 
 **AES Core Tests (Simulation Only):**
 
@@ -591,7 +591,7 @@ Notes:
 
 **Simulation Totals:** 580+ unit tests + integration tests
 
-### 11.2 Hardware-in-the-Loop (HIL) Tests
+### 10.2 Hardware-in-the-Loop (HIL) Tests
 
 **AES-Only Mode (v1.x):**
 
@@ -603,7 +603,7 @@ Notes:
 
 **Total HIL Tests:** 792 tests on hardware + 792 on mock framework
 
-### 11.3 Integration Test Coverage (v0.0.2 with ADC)
+### 10.3 Integration Test Coverage (v0.0.2 with ADC)
 
 | Component | Test Scenario | Coverage |
 |-----------|---|---|
@@ -613,7 +613,7 @@ Notes:
 | **UART Controller** | Key loading, result transmission | ✓ Reused from v1.x |
 | **End-to-End** | Sensor → Encrypt → Transmit → PC | ✓ Hardware validation |
 
-### 11.4 Regression Prevention
+### 10.4 Regression Prevention
 
 **All existing tests remain unchanged:**
 -- v1.x testbenches still pass (100% backward compatible)
@@ -624,7 +624,7 @@ Notes:
 -- `tb_aes_adc_top.vhd` validates ADC+AES integration
 - No breaking changes to existing modules
 
-### 11.5 Test Execution Commands
+### 10.5 Test Execution Commands
 
 **Simulation (Vivado):**
 ```tcl
@@ -662,7 +662,7 @@ python hil/python/send_single_encrypt.py --port COM6
 python hil/python/adc_monitor.py --port COM6 --duration 60
 ```
 
-### 11.6 Coverage Summary
+### 10.6 Coverage Summary
 
 | Category | v1.x | v0.0.2 Added | Total |
 |----------|------|-----------|-------|
