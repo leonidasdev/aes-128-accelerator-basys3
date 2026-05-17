@@ -23,8 +23,41 @@ end entity tb_aes_ldr_top;
 
 architecture sim of tb_aes_ldr_top is
 
+    -- Vivado resolves to_hstring inconsistently here, so use a local helper
+    -- to keep the testbench compatible with the rest of the repository.
+    function slv_to_hstring(value : std_logic_vector) return string is
+        variable result : string(1 to value'length / 4);
+        variable nibble : std_logic_vector(3 downto 0);
+    begin
+        for i in 0 to result'length - 1 loop
+            nibble := value(value'left - i * 4 downto value'left - i * 4 - 3);
+            case to_integer(unsigned(nibble)) is
+                when 0  => result(i + 1) := '0';
+                when 1  => result(i + 1) := '1';
+                when 2  => result(i + 1) := '2';
+                when 3  => result(i + 1) := '3';
+                when 4  => result(i + 1) := '4';
+                when 5  => result(i + 1) := '5';
+                when 6  => result(i + 1) := '6';
+                when 7  => result(i + 1) := '7';
+                when 8  => result(i + 1) := '8';
+                when 9  => result(i + 1) := '9';
+                when 10 => result(i + 1) := 'A';
+                when 11 => result(i + 1) := 'B';
+                when 12 => result(i + 1) := 'C';
+                when 13 => result(i + 1) := 'D';
+                when 14 => result(i + 1) := 'E';
+                when others => result(i + 1) := 'F';
+            end case;
+        end loop;
+        return result;
+    end function;
+
     -- Component Declarations
     component ldr_sampler_fsm
+        generic (
+            TIMER_MAX_CYCLES : integer := 500000000
+        );
         port (
             clk           : in  std_logic;
             rst_n         : in  std_logic;
@@ -108,34 +141,41 @@ begin
     end process;
     
     -- XADC Mock Model
-    -- Simulates XADC behavior: request → 2 cycles later, return valid data
+    -- Simulates XADC behavior: detect a new request edge → 2 cycles later, return valid data
     process
-        variable xadc_request_time : integer := 0;
+        variable xadc_request_time : integer := -1000000;
         variable adc_counter : integer := 0;
+        variable prev_xadc_ready : std_logic := '0';
     begin
         wait until rising_edge(clk);
-        
-        -- When sampler requests a read, respond after 2-cycle latency
-        if xadc_ready = '1' then
+
+        -- Detect rising edge of request and latch request time once per request
+        if xadc_ready = '1' and prev_xadc_ready = '0' then
             xadc_request_time := cycle_count;
             adc_counter := adc_counter + 1;
             xadc_mock_adc <= std_logic_vector(to_unsigned(256 + adc_counter, 12));
             report "[XADC] Read request at cycle " & integer'image(cycle_count);
         end if;
-        
-        -- Simulate 2-cycle latency, then return valid data
+
+        -- Simulate 2-cycle latency from latched request, then return valid data
         if cycle_count = xadc_request_time + 2 then
             xadc_data <= (15 downto 12 => '0') & xadc_mock_adc;  -- status[3:0] + ADC[11:0]
             xadc_valid <= '1';
             report "[XADC] Data valid at cycle " & integer'image(cycle_count) & 
-                   ", ADC value: 0x" & to_hstring(xadc_mock_adc);
+                   ", ADC value: 0x" & slv_to_hstring(xadc_mock_adc);
         else
             xadc_valid <= '0';
         end if;
+
+        -- Update previous ready for edge detection
+        prev_xadc_ready := xadc_ready;
     end process;
 
     -- Instantiate LDR Sampler FSM
+    -- For simulation we override the production 5-second timer to a much
+    -- shorter value to keep simulations fast. Set to 5,000 cycles (~50 µs at 100 MHz).
     u_sampler : ldr_sampler_fsm
+        generic map (timer_max_cycles => 5000)
         port map (
             clk           => clk,
             rst_n         => rst_n,
@@ -188,16 +228,17 @@ begin
         -- TEST 1: First automatic sample (after 5 seconds)
         -- =====================================================================
         
-        report "[TEST] === SAMPLE 1: Waiting for first 5-second timer ======================";
+        report "[TEST] === SAMPLE 1: Waiting for first 5-second timer (sim shortened) ===";
         
-        -- For simulation, wait a short time window for sampler_result_ready
-        wait until sampler_result_ready = '1' for 600 ms;
+        -- For simulation the sampling timer is shortened via the generic above
+        -- so use a much smaller timeout to avoid long wall-clock runs.
+        wait until sampler_result_ready = '1' for 10 ms;
         
         if sampler_result_ready = '1' then
             sample_number := 1;
             report "[TEST] Sample " & integer'image(sample_number) & " encrypted successfully";
-            report "[TEST]   Raw ADC value: 0x" & to_hstring(sampler_adc_raw);
-            report "[TEST]   Encrypted: 0x" & to_hstring(sampler_encrypted);
+            report "[TEST]   Raw ADC value: 0x" & slv_to_hstring(sampler_adc_raw);
+            report "[TEST]   Encrypted: 0x" & slv_to_hstring(sampler_encrypted);
             report "[TEST]   Sample count: " & integer'image(to_integer(unsigned(sampler_count)));
             wait for 10 ns;
         else
@@ -208,14 +249,15 @@ begin
         -- TEST 2: Wait for second sample
         -- =====================================================================
         
-        report "[TEST] === SAMPLE 2: Waiting for second 5-second timer ======================";
-        wait until sampler_result_ready = '1' for 600 ms;
+        report "[TEST] === SAMPLE 2: Waiting for second 5-second timer (sim shortened) ===";
+        -- Same shortened timer applies to the second automatic sample.
+        wait until sampler_result_ready = '1' for 10 ms;
         
         if sampler_result_ready = '1' then
             sample_number := 2;
             report "[TEST] Sample " & integer'image(sample_number) & " encrypted successfully";
-            report "[TEST]   Raw ADC value: 0x" & to_hstring(sampler_adc_raw);
-            report "[TEST]   Encrypted: 0x" & to_hstring(sampler_encrypted);
+            report "[TEST]   Raw ADC value: 0x" & slv_to_hstring(sampler_adc_raw);
+            report "[TEST]   Encrypted: 0x" & slv_to_hstring(sampler_encrypted);
             report "[TEST]   Sample count: " & integer'image(to_integer(unsigned(sampler_count)));
             wait for 10 ns;
         else
@@ -235,7 +277,7 @@ begin
         
         if sampler_result_ready = '1' then
             report "[TEST] Manual trigger successful";
-            report "[TEST]   Raw ADC value: 0x" & to_hstring(sampler_adc_raw);
+            report "[TEST]   Raw ADC value: 0x" & slv_to_hstring(sampler_adc_raw);
             report "[TEST]   Sample count: " & integer'image(to_integer(unsigned(sampler_count)));
         else
             report "[TEST] ERROR: Manual trigger timeout";
@@ -251,12 +293,12 @@ begin
         
         if sampler_aes_data = expected_plaintext then
             report "[TEST] Padding verification PASSED";
-            report "[TEST]   Expected: 0x" & to_hstring(expected_plaintext);
-            report "[TEST]   Got:      0x" & to_hstring(sampler_aes_data);
+            report "[TEST]   Expected: 0x" & slv_to_hstring(expected_plaintext);
+            report "[TEST]   Got:      0x" & slv_to_hstring(sampler_aes_data);
         else
             report "[TEST] ERROR: Padding mismatch!";
-            report "[TEST]   Expected: 0x" & to_hstring(expected_plaintext);
-            report "[TEST]   Got:      0x" & to_hstring(sampler_aes_data);
+            report "[TEST]   Expected: 0x" & slv_to_hstring(expected_plaintext);
+            report "[TEST]   Got:      0x" & slv_to_hstring(sampler_aes_data);
         end if;
 
         -- =====================================================================
@@ -286,11 +328,11 @@ begin
         end if;
         
         if sampler_aes_start = '1' then
-            report "[AES] Start signal asserted, plaintext: 0x" & to_hstring(sampler_aes_data);
+            report "[AES] Start signal asserted, plaintext: 0x" & slv_to_hstring(sampler_aes_data);
         end if;
         
         if aes_done = '1' then
-            report "[AES] Done signal asserted, ciphertext: 0x" & to_hstring(aes_data_out);
+            report "[AES] Done signal asserted, ciphertext: 0x" & slv_to_hstring(aes_data_out);
         end if;
         
         if sampler_result_ready = '1' then

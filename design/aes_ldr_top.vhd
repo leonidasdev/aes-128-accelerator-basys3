@@ -41,18 +41,8 @@ end entity aes_ldr_top;
 
 architecture rtl of aes_ldr_top is
 
-    -- Utility: compute parity of a std_logic_vector to ensure all bits are read
-    function parity_slv(vec : std_logic_vector) return std_logic is
-        variable p : std_logic := '0';
-    begin
-        for i in vec'range loop
-            p := p xor vec(i);
-        end loop;
-        return p;
-    end function parity_slv;
-
-    -- Diagnostic sink to consume signals that are otherwise unused
-    signal _diag_unused : std_logic;
+    -- Active-low reset net for blocks using rst_n
+    signal rst_n_i : std_logic;
 
     -- XADC Wizard generated component (user must generate this in Vivado)
     component xadc_wiz_0
@@ -126,27 +116,22 @@ architecture rtl of aes_ldr_top is
     signal xadc_data : std_logic_vector(15 downto 0);
     signal xadc_valid : std_logic;
     signal xadc_ready : std_logic;
-    signal xadc_busy : std_logic;
-    signal xadc_eoc : std_logic;
 
-    -- LDR sampler FSM signals
+    -- LDR sampler FSM signals (only AES start/data exchanged with AES core)
     signal sampler_aes_start : std_logic;
     signal sampler_aes_data : std_logic_vector(127 downto 0);
-    signal sampler_result_ready : std_logic;
-    signal sampler_encrypted : std_logic_vector(127 downto 0);
-    signal sampler_adc_raw : std_logic_vector(11 downto 0);
-    signal sampler_count : std_logic_vector(31 downto 0);
 
     -- AES core signals
     signal aes_done : std_logic;
     signal aes_data_out : std_logic_vector(127 downto 0);
-    signal aes_ready : std_logic;
-    signal aes_error : std_logic;
 
     -- Key storage (loaded from UART once, reused for all samples)
     signal stored_key : std_logic_vector(127 downto 0);
 
 begin
+
+    -- Convert board-level active-high reset to internal active-low reset
+    rst_n_i <= not rst;
 
     -- Initialize stored_key with default FIPS-197 test key
     -- Note: v2.0 uses a fixed key for autonomous LDR sampling.
@@ -168,9 +153,9 @@ begin
             reset_in      => rst,
             vp_in         => '0',             -- VP not used
             vn_in         => '0',             -- VN not used
-            busy_out      => xadc_busy,
+            busy_out      => open,
             channel_out   => open,
-            eoc_out       => xadc_eoc,
+            eoc_out       => open,
             eos_out       => open,
             alarm_out     => open,
             vauxp5        => ldr_adc_in,      -- LDR voltage divider output → CH5 positive
@@ -183,7 +168,7 @@ begin
     u_sampler : ldr_sampler_fsm
         port map (
             clk           => clk,
-            rst_n         => not rst,
+            rst_n         => rst_n_i,
             manual_trigger => '0',            -- always use periodic timer
             xadc_valid    => xadc_valid,
             xadc_data     => xadc_data,
@@ -193,10 +178,10 @@ begin
             aes_key       => stored_key,
             aes_data      => sampler_aes_data,
             aes_out       => aes_data_out,
-            result_ready  => sampler_result_ready,
-            encrypted     => sampler_encrypted,
-            adc_raw       => sampler_adc_raw,
-            sample_count  => sampler_count
+            result_ready  => open,
+            encrypted     => open,
+            adc_raw       => open,
+            sample_count  => open
         );
 
     -- =========================================================================
@@ -205,15 +190,15 @@ begin
     u_aes : aes_top
         port map (
             clk      => clk,
-            rst_n    => not rst,
+            rst_n    => rst_n_i,
             start    => sampler_aes_start,
             enc_dec  => '1',                  -- always encrypt (not decrypt)
             data_in  => sampler_aes_data,     -- padded ADC value
             key_in   => stored_key,
             data_out => aes_data_out,
             done     => aes_done,
-            ready    => aes_ready,
-            error    => aes_error
+            ready    => open,
+            error    => open
         );
 
     -- =========================================================================
@@ -227,16 +212,11 @@ begin
     u_uart_ctrl : uart_aes_controller
         port map (
             clk        => clk,
-            rst_n      => not rst,
+            rst_n      => rst_n_i,
             rx         => rx,
             tx         => tx,
             led_status => led_status
         );
-
-    -- consume otherwise-unused signals to avoid linter "bits not read" warnings
-    _diag_unused <= aes_error xor aes_ready xor parity_slv(sampler_encrypted)
-                   xor parity_slv(sampler_adc_raw) xor parity_slv(sampler_count)
-                   xor parity_slv(xadc_data) xor stored_key(0) xor ldr_adc_in;
 
 end architecture rtl;
 
