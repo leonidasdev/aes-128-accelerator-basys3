@@ -1,7 +1,5 @@
 # AES-128 Hardware Accelerator Implementation
 
-**License:** MIT (see [LICENSE](LICENSE) file)
-
 ## Project Overview
 
 This project implements a NIST FIPS-197 compliant AES-128 hardware accelerator in VHDL for the Basys 3 development board. The design focuses on a clear embedded-systems architecture: a reusable AES core, a small control FSM, deterministic key expansion, self-checking simulation testbenches, and hardware-in-the-loop validation from a host PC.
@@ -33,8 +31,8 @@ The intent is to show a complete engineering flow rather than a line-by-line sou
 7. [Performance Summary](#7-performance-summary)
 8. [Analog Sensor ADC Integration](#8-analog-sensor-adc-integration) (v0.0.2 feature)
 9. [Getting Started](#9-getting-started)
-10. [References](#10-references)
-11. [Test Coverage Matrix](#11-test-coverage-matrix)
+10. [Test Coverage Matrix](#10-test-coverage-matrix)
+11. [References](#11-references)
 
 ---
 
@@ -569,18 +567,7 @@ Notes:
 
 ---
 
-## 10. References
-
-- NIST FIPS-197, Advanced Encryption Standard (AES)
-- Basys 3 Reference Manual: https://digilent.com/reference/programmable-logic/basys-3/reference-manual
-- Xilinx UG480: System Monitor in 7-Series FPGAs (XADC reference)
-- VHDL-2008, IEEE 1076-2008
-- pycryptodome documentation: https://www.dlitz.net/software/pycryptodome/
-- pyserial documentation: https://pyserial.readthedocs.io/
-
----
-
-## 11. Test Coverage Matrix
+## 10. Test Coverage Matrix
 
 ### 11.1 Simulation Testbenches
 
@@ -595,8 +582,8 @@ Notes:
 | [tb_mix_columns.vhd](simulation/testbenches/transformations/tb_mix_columns.vhd) | mix_columns | Verify forward column GF(2^8) mixing | 1 | PASS ✓ |
 | [tb_inv_mix_columns.vhd](simulation/testbenches/transformations/tb_inv_mix_columns.vhd) | inv_mix_columns | Verify inverse column mixing | 1 | PASS ✓ |
 | [tb_add_round_key.vhd](simulation/testbenches/transformations/tb_add_round_key.vhd) | add_round_key | Verify state XOR round key | 1 | PASS ✓ |
-| [tb_aes_datapath.vhd](simulation/testbenches/tb_aes_datapath.vhd) | aes_datapath | Verify state/key load, AddRoundKey, hold behavior | 3 | PASS/FAIL ✓ |
-| [tb_adc_sampler_fsm.vhd](simulation/testbenches/tb_adc_sampler_fsm.vhd) | adc_sampler_fsm | Verify ADC sampling, padding, AES handshake, buffering | 5 | PASS/FAIL ✓ |
+| [tb_aes_datapath.vhd](simulation/testbenches/tb_aes_datapath.vhd) | aes_datapath | Verify state/key load, AddRoundKey, hold behavior | 3 | All PASS ✓ |
+| [tb_adc_sampler_fsm.vhd](simulation/testbenches/tb_adc_sampler_fsm.vhd) | adc_sampler_fsm | Verify ADC sampling, padding, AES handshake, buffering | 5 | All PASS ✓ |
 | [tb_key_expansion.vhd](simulation/testbenches/tb_key_expansion.vhd) | key_expansion | Verify round key generation (all 11 rounds) | 22 | All PASS ✓ |
 | [tb_aes_top.vhd](simulation/testbenches/tb_aes_top.vhd) | aes_top (integration) | Verify end-to-end AES encrypt/decrypt | 31 | All PASS ✓ |
 | [tb_uart_aes_controller.vhd](simulation/testbenches/tb_uart_aes_controller.vhd) | uart_aes_controller | Verify UART command parsing & FPGA orchestration | 4 | All PASS ✓ |
@@ -685,6 +672,19 @@ python hil/python/adc_monitor.py --port COM6 --duration 60
 | **Vector coverage** | FIPS-197 + 260 edge cases | Extends to LDR samples | 100% |
 
 **Conclusion:** Comprehensive test coverage across simulation, integration, and hardware layers. All test cases maintained for regression prevention.
+
+**Verified Status:** All tests listed in this matrix were validated and passed in the latest run.
+
+---
+
+## 11. References
+
+- NIST FIPS-197, Advanced Encryption Standard (AES)
+- Basys 3 Reference Manual: https://digilent.com/reference/programmable-logic/basys-3/reference-manual
+- Xilinx UG480: System Monitor in 7-Series FPGAs (XADC reference)
+- VHDL-2008, IEEE 1076-2008
+- pycryptodome documentation: https://www.dlitz.net/software/pycryptodome/
+- pyserial documentation: https://pyserial.readthedocs.io/
 
 ---
 

@@ -21,7 +21,11 @@ Hardware-in-the-loop testing validates the AES-128 FPGA implementation by compar
 Host Computer (Windows)
   ├─ Python HIL Framework
   │   ├─ aes_hil_test.py (main test controller)
-  │   └─ generate_vectors.py (vector generation)
+  │   ├─ adc_monitor.py (ADC monitor and decryptor)
+  │   ├─ generate_vectors.py (vector generation)
+  │   ├─ mock_aes_adc.py / mock_aes_hil.py (test doubles)
+  │   ├─ send_single_encrypt.py / send_single_decrypt.py (smoke tests)
+  │   └─ serial_diagnostics.py + tests (manual diagnostics and regression)
   │
   └─ USB Serial UART
       └─ 115,200 bps, 8 data bits, 1 stop bit, no parity
@@ -190,6 +194,30 @@ python hil\python\generate_vectors.py 100 hil\vectors\extended_vectors.txt
 
 # Output format: Same as test_vectors.txt
 ```
+
+### adc_monitor.py
+
+Monitor ADC samples from the FPGA, decrypt the ciphertext back to raw ADC values, and write CSV output under `hil/results/`.
+
+### serial_diagnostics.py
+
+Manual serial debugging tool for probing modem lines, toggling DTR/RTS, sending break conditions, and running simple UART probe sequences.
+
+### mock_aes_hil.py
+
+Mock AES FPGA controller used by the Python unit tests and offline HIL development.
+
+### mock_aes_adc.py
+
+Mock ADC stream used to validate the ADC monitor without hardware.
+
+### test_aes_hil_mock.py
+
+Mock-based unit tests for the main HIL controller and serial wrapper.
+
+### test_aes_adc_mock.py
+
+Mock-based integration tests for the ADC monitor workflow.
 
 ### run_hil_tests.ps1
 
@@ -510,12 +538,14 @@ mock_fpga.reset_faults()
 hil/python/
 ├── aes_hil_test.py              # Main test controller (hardware or mock)
 ├── adc_monitor.py               # ADC monitor and decryptor
-├── mock_aes_adc.py              # Mock ADC stream simulator
 ├── generate_vectors.py          # Vector generation utility
-├── mock_aes_hil.py               # Mock AES HIL simulator (NEW)
-├── test_aes_adc_mock.py          # ADC monitor integration tests (NEW)
-├── test_aes_hil_mock.py          # Unit tests with mock (NEW)
-└── __init__.py                  # Package marker (optional)
+├── mock_aes_adc.py              # Mock ADC stream simulator
+├── mock_aes_hil.py              # Mock AES HIL simulator
+├── send_single_decrypt.py       # Single-vector decryption smoke test
+├── send_single_encrypt.py       # Single-vector encryption smoke test
+├── serial_diagnostics.py        # Manual serial troubleshooting utility
+├── test_aes_adc_mock.py         # ADC monitor integration tests
+└── test_aes_hil_mock.py          # Unit tests with mock
 ```
 
 ### When to Use Mock vs. Hardware Tests
@@ -583,7 +613,7 @@ binascii.hexlify() produces matching hex string
 
 ## Test Results Logging
 
-Test results automatically saved to timestamped log file in `hil/results/`:
+The HIL runner saves the full transcript to a timestamped log file in `hil/results/`:
 
 ```
 hil/results/hil_test_results_20260512_143022.txt
@@ -636,7 +666,7 @@ python hil\python\generate_vectors.py 1000 stress_test_vectors.txt
 2. Verify package dependencies (pycryptodome, pyserial)
 3. Validate serial port availability
 4. Execute HIL test suite via aes_hil_test.py
-5. Parse results and generate timestamped log
+5. Capture the full run transcript to a timestamped log file
 6. Report summary statistics
 
 ### 4.4 hil_verify.py
@@ -915,9 +945,19 @@ This directory contains the **Hardware-in-the-Loop (HIL) testing infrastructure*
 ```
 hil/
 ├── README.md                      # This file
+├── hil_verify.py                  # Environment and structure verification
+├── results/                       # Timestamped HIL logs and run output
 ├── python/
 │   ├── aes_hil_test.py            # Main HIL test controller
-│   └── generate_vectors.py        # Test vector generation utility
+│   ├── adc_monitor.py             # ADC monitor and decryptor
+│   ├── generate_vectors.py        # Test vector generation utility
+│   ├── mock_aes_adc.py            # Mock ADC stream simulator
+│   ├── mock_aes_hil.py            # Mock AES HIL simulator
+│   ├── send_single_decrypt.py     # Single-vector decryption smoke test
+│   ├── send_single_encrypt.py     # Single-vector encryption smoke test
+│   ├── serial_diagnostics.py      # Manual serial troubleshooting utility
+│   ├── test_aes_adc_mock.py       # ADC monitor integration tests
+│   └── test_aes_hil_mock.py       # Unit tests with mock
 ├── vectors/
 │   └── test_vectors.txt           # Comprehensive regression suite (authoritative HIL input)
 ├── run_hil_tests.ps1              # Batch test automation script (PowerShell)
@@ -1147,7 +1187,7 @@ python .\python\generate_vectors.py
 ```
 
 **Log Output**:
-Saves results to timestamped file in `hil/results/`:
+Saves the full transcript to a timestamped file in `hil/results/`:
 - `hil_test_results_20260512_143022.txt`
 
 ---
