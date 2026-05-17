@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
 """
-ldr_monitor.py — LDR Sensor Monitoring and Decryption Tool
-Logs autonomous LDR samples from aes_ldr_top + XADC, decrypts results, saves to CSV.
+adc_monitor.py — Generic ADC Monitoring and Decryption Tool
+Logs autonomous ADC samples from aes_adc_top + XADC, decrypts results, saves to CSV.
 
 Hardware Platform:
-    - Basys3 FPGA with aes_ldr_top design
-    - XADC channel 5 (Pmod JA Pin 1) samples LDR every 5 seconds
+    - Basys3 FPGA with aes_adc_top design
+    - XADC channel 5 (Pmod JA Pin 1) samples the analog input every 5 seconds
     - AES-128 encrypts each sample autonomously
     - Results transmitted via UART at 115,200 bps
 
 Protocol:
-    The aes_ldr_top firmware autonomously:
-    1. Every 5 seconds, reads the LDR via XADC
+    The aes_adc_top firmware autonomously:
+    1. Every 5 seconds, reads the analog sensor via XADC
     2. Pads the 12-bit ADC value to 128-bit plaintext: [000...000|12-bit ADC]
     3. Encrypts the padded value using pre-loaded AES key
     4. Transmits encrypted result via UART (32 hex characters + newline)
@@ -24,16 +24,16 @@ Python Tool:
 
 Usage:
     # Initial setup: load AES key into FPGA once
-    python ldr_monitor.py --port COM6 --baudrate 115200 --init-key 000102030405060708090a0b0c0d0e0f
+    python adc_monitor.py --port COM6 --baudrate 115200 --init-key 000102030405060708090a0b0c0d0e0f
 
     # Monitor for 5 minutes (default), save to results_20260515_150000.csv
-    python ldr_monitor.py --port COM6 --duration 300
+    python adc_monitor.py --port COM6 --duration 300
 
     # Monitor indefinitely (Ctrl+C to stop)
-    python ldr_monitor.py --port COM6 --duration 0
+    python adc_monitor.py --port COM6 --duration 0
 
     # Manual key per run (non-interactive)
-    python ldr_monitor.py --port COM6 --key 000102030405060708090a0b0c0d0e0f --duration 300
+    python adc_monitor.py --port COM6 --key 000102030405060708090a0b0c0d0e0f --duration 300
 
 Requirements:
     pip install pycryptodome pyserial
@@ -51,8 +51,8 @@ from Crypto.Cipher import AES
 import binascii
 
 
-class LDRMonitor:
-    """Monitor LDR samples and decrypt results from FPGA"""
+class ADCMonitor:
+    """Monitor ADC samples and decrypt results from FPGA"""
 
     def __init__(self, port: str = 'COM6', baudrate: int = 115200, timeout: float = 1.0, verbose: bool = False):
         """
@@ -165,9 +165,9 @@ class LDRMonitor:
                 print(f"[ERROR] Decryption failed: {e}")
             return None
 
-    def monitor(self, duration: int = 300, key_hex: Optional[str] = None, csv_file: Optional[str] = None):
+    def monitor(self, duration: float = 300.0, key_hex: Optional[str] = None, csv_file: Optional[str] = None):
         """
-        Monitor FPGA UART for encrypted LDR samples, decrypt, and log to CSV.
+        Monitor FPGA UART for encrypted ADC samples, decrypt, and log to CSV.
 
         Args:
             duration: Monitoring duration in seconds (0 = indefinite)
@@ -184,7 +184,7 @@ class LDRMonitor:
         # Set up CSV file
         if csv_file is None:
             timestamp_str = self.start_time.strftime("%Y%m%d_%H%M%S")
-            csv_file = f"ldr_samples_{timestamp_str}.csv"
+            csv_file = f"adc_samples_{timestamp_str}.csv"
 
         results_dir = Path("results")
         results_dir.mkdir(exist_ok=True)
@@ -202,7 +202,7 @@ class LDRMonitor:
             return
 
         # Monitoring loop
-        print(f"\n[MONITOR] Starting to listen for LDR samples (duration: {duration}s, 0=indefinite)")
+        print(f"\n[MONITOR] Starting to listen for ADC samples (duration: {duration}s, 0=indefinite)")
         print(f"[MONITOR] Key: {key_hex}")
         print(f"[MONITOR] CSV: {csv_path}")
         print(f"[MONITOR] Press Ctrl+C to stop\n")
@@ -230,7 +230,7 @@ class LDRMonitor:
 
                         if adc_value is not None:
                             # Convert ADC to voltage (0-4095 maps to 0-1V for XADC)
-                            # Pmod JA uses voltage divider, so voltage range depends on LDR circuit
+                            # Pmod JA uses voltage divider, so voltage range depends on the sensor circuit
                             adc_voltage = (adc_value / 4095.0) * 1.0  # 1V full scale for XADC
                             
                             # Log to CSV
@@ -270,11 +270,11 @@ class LDRMonitor:
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Monitor LDR samples from FPGA, decrypt results, and save to CSV"
+        description="Monitor ADC samples from FPGA, decrypt results, and save to CSV"
     )
     parser.add_argument('--port', default='COM6', help='Serial port (default: COM6)')
     parser.add_argument('--baudrate', type=int, default=115200, help='Baud rate (default: 115200)')
-    parser.add_argument('--duration', type=int, default=300, help='Monitor duration in seconds (default: 300, 0=indefinite)')
+    parser.add_argument('--duration', type=float, default=300.0, help='Monitor duration in seconds (default: 300, 0=indefinite)')
     parser.add_argument('--key', help='128-bit AES key (32 hex chars, will prompt if not provided)')
     parser.add_argument('--init-key', help='Load key but do not monitor (for initialization)')
     parser.add_argument('--csv', help='Output CSV filename (auto-generated if not provided)')
@@ -282,7 +282,7 @@ def main():
 
     args = parser.parse_args()
 
-    monitor = LDRMonitor(port=args.port, baudrate=args.baudrate, verbose=args.verbose)
+    monitor = ADCMonitor(port=args.port, baudrate=args.baudrate, verbose=args.verbose)
 
     if args.init_key:
         # Just load key and exit

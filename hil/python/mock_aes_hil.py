@@ -1,5 +1,5 @@
 """
-Mock FPGA Controller for AES Hardware-in-the-Loop Testing
+Mock AES HIL Controller for AES Hardware-in-the-Loop Testing
 
 Simulates the Basys 3 AES FPGA without requiring actual hardware.
 Implements the same serial protocol as the real FPGA for unit testing.
@@ -11,10 +11,10 @@ This module allows testing the Python HIL framework independently:
 - End-to-end test workflows
 
 Usage:
-    from mock_fpga_controller import MockFPGAController
+    from mock_aes_hil import MockAESHILController
     
     # Create mock FPGA instance
-    mock = MockFPGAController(verbose=True)
+    mock = MockAESHILController(verbose=True)
     
     # Use as a drop-in replacement for serial port
     mock.write(b'K:000102030405060708090A0B0C0D0E0F\n')
@@ -33,7 +33,7 @@ from Crypto.Cipher import AES as CryptoAES
 import time
 
 
-class MockFPGAController:
+class MockAESHILController:
     """
     Mock FPGA controller that simulates the Basys 3 AES accelerator.
     
@@ -328,18 +328,18 @@ class MockFPGAController:
     
     def __repr__(self) -> str:
         """String representation."""
-        return f"MockFPGAController(commands={self.commands_received}, responses={self.responses_sent})"
+        return f"MockAESHILController(commands={self.commands_received}, responses={self.responses_sent})"
 
 
-class MockSerialPort:
+class MockAESHILSerialPort:
     """
-    Drop-in replacement for pyserial.Serial that uses MockFPGAController.
+    Drop-in replacement for pyserial.Serial that uses MockAESHILController.
     
     This class allows aes_hil_test.py to work unchanged with mock FPGA.
     """
     
     def __init__(self, port: Optional[str] = None, baudrate: int = 115200,
-                 timeout: float = 1.0, mock_fpga: Optional[MockFPGAController] = None,
+                 timeout: float = 1.0, mock_fpga: Optional[MockAESHILController] = None,
                  verbose: bool = False):
         """
         Initialize mock serial port.
@@ -348,7 +348,7 @@ class MockSerialPort:
             port: Port name (ignored, not used by mock)
             baudrate: Baud rate (ignored, not used by mock)
             timeout: Read timeout in seconds (used to detect no response)
-            mock_fpga: Pre-configured MockFPGAController (or None to create new)
+            mock_fpga: Pre-configured MockAESHILController (or None to create new)
             verbose: Enable debug output
         """
         self.port = port or "MOCK"
@@ -358,10 +358,10 @@ class MockSerialPort:
         self._rx_buffer = b''
         
         # Use provided mock or create new one
-        self.mock_fpga = mock_fpga or MockFPGAController(verbose=verbose)
+        self.mock_fpga = mock_fpga or MockAESHILController(verbose=verbose)
         
         if self.verbose:
-            print(f"[MockSerialPort] Opened {self.port}")
+            print(f"[MockAESHILSerialPort] Opened {self.port}")
     
     def write(self, data: bytes) -> int:
         """Write data to mock FPGA and queue response bytes."""
@@ -393,7 +393,7 @@ class MockSerialPort:
             elapsed = time.time() - start_time
             if elapsed > self.timeout:
                 if self.verbose:
-                    print(f"[MockSerialPort] Read timeout after {elapsed:.2f}s")
+                    print(f"[MockAESHILSerialPort] Read timeout after {elapsed:.2f}s")
                 return b''
 
             time.sleep(0.001)
@@ -423,7 +423,7 @@ if __name__ == '__main__':
     print("=== Mock FPGA Controller Self-Test ===\n")
     
     # Create mock FPGA
-    mock = MockFPGAController(verbose=True)
+    mock = MockAESHILController(verbose=True)
     
     # Test 1: Basic encryption
     print("\n--- Test 1: Basic Encryption ---")
@@ -456,3 +456,8 @@ if __name__ == '__main__':
     # Test 4: Statistics
     print(f"\n--- Test 4: Statistics ---")
     print(f"Stats: {mock.get_stats()}")
+
+
+# Backward-compatible aliases.
+MockFPGAController = MockAESHILController
+MockSerialPort = MockAESHILSerialPort

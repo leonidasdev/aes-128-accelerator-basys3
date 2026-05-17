@@ -33,6 +33,7 @@ import serial
 import time
 import sys
 import argparse
+from contextlib import redirect_stdout
 from pathlib import Path
 from typing import List, Tuple, Optional
 from datetime import datetime
@@ -466,7 +467,7 @@ class AESHardwareTest:
         return match
     
     def print_summary(self):
-        """Print test summary, write to log file, and return exit code."""
+        """Print test summary and return exit code."""
         total = self.pass_count + self.fail_count
         success_rate = (self.pass_count / total * 100) if total > 0 else 0
         
@@ -484,25 +485,6 @@ class AESHardwareTest:
         # Print to stdout
         for line in summary_lines:
             print(line)
-        
-        # Write to log file
-        try:
-            results_dir = Path(__file__).parent.parent / "results"
-            results_dir.mkdir(parents=True, exist_ok=True)
-            
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            log_file = results_dir / f"hil_test_results_{timestamp}.txt"
-            
-            with open(log_file, 'w') as f:
-                f.write("AES-128 FPGA Hardware-in-the-Loop Test Results\n")
-                f.write(f"Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-                f.write(f"Port: {self.port_name}, Baudrate: {self.baudrate} bps\n")
-                f.write("\n".join(summary_lines))
-                
-            if self.verbose:
-                print(f"[LOG] Results saved to {log_file}")
-        except Exception as e:
-            print(f"WARNING: Could not write log file: {e}")
         
         # Print exit message
         if self.fail_count == 0:
@@ -588,52 +570,75 @@ Examples:
     parser.add_argument('--verbose', action='store_true', help='Enable verbose logging')
     
     args = parser.parse_args()
+
+    results_dir = Path(__file__).parent.parent / "results"
+    results_dir.mkdir(parents=True, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    log_file = results_dir / f"hil_test_results_{timestamp}.txt"
     
-    print("="*70)
-    print("AES-128 FPGA Hardware-in-the-Loop Test Suite")
-    print("="*70)
-    print(f"Port: {args.port}, Baudrate: {args.baudrate} bps, Timeout: {args.timeout} s")
-    print("="*70 + "\n")
-    
-    # Initialize hardware interface
-    tester = AESHardwareTest(args.port, args.baudrate, timeout=args.timeout, verbose=args.verbose)
-    
-    # Determine vector file path
-    if args.vector_file:
-        vector_file = Path(args.vector_file)
-    else:
-        # Default to hil/vectors/test_vectors.txt relative to script location
-        # Script is in hil/python/, so go up one level to hil/, then to vectors/
-        script_dir = Path(__file__).parent
-        vector_file = script_dir.parent / "vectors" / "test_vectors.txt"
-    
-    # Load test vectors
-    vectors = load_test_vectors(vector_file)
-    if not vectors:
-        print(f"ERROR: No test vectors loaded from {vector_file}")
-        return 1
-    
-    print(f"Loaded {len(vectors)} test vectors from {vector_file}\n")
-    
-    # Run tests
-    for idx, (plaintext, ciphertext, key) in enumerate(vectors, 1):
-        print(f"Test Vector {idx}/{len(vectors)}")
-        
-        # Three tests per vector: encryption, decryption, round-trip
-        tester.verify_encryption(plaintext, key, f"vector {idx}")
-        tester.verify_decryption(ciphertext, key, f"vector {idx}")
-        tester.verify_round_trip(plaintext, key, f"vector {idx}")
-        
-        print()
-    
-    # Print summary and exit
-    exit_code = tester.print_summary()
-    
-    try:
-        tester.port.close()
-    except:
-        pass
-    
+    with open(log_file, 'w', encoding='utf-8') as log_handle:
+        class _Tee:
+            def __init__(self, *streams):
+                self._streams = streams
+
+            def write(self, text):
+                for stream in self._streams:
+                    stream.write(text)
+                return len(text)
+
+            def flush(self):
+                for stream in self._streams:
+                    stream.flush()
+
+        with redirect_stdout(_Tee(sys.stdout, log_handle)):
+            print("="*70)
+            print("AES-128 FPGA Hardware-in-the-Loop Test Suite")
+            print("="*70)
+            print(f"Port: {args.port}, Baudrate: {args.baudrate} bps, Timeout: {args.timeout} s")
+            print("="*70 + "\n")
+            print(f"Log file: {log_file}\n")
+            
+            # Initialize hardware interface
+            tester = AESHardwareTest(args.port, args.baudrate, timeout=args.timeout, verbose=args.verbose)
+            
+            # Determine vector file path
+            if args.vector_file:
+                vector_file = Path(args.vector_file)
+            else:
+                # Default to hil/vectors/test_vectors.txt relative to script location
+                # Script is in hil/python/, so go up one level to hil/, then to vectors/
+                script_dir = Path(__file__).parent
+                vector_file = script_dir.parent / "vectors" / "test_vectors.txt"
+            
+            # Load test vectors
+            vectors = load_test_vectors(vector_file)
+            if not vectors:
+                print(f"ERROR: No test vectors loaded from {vector_file}")
+                return 1
+            
+            print(f"Loaded {len(vectors)} test vectors from {vector_file}\n")
+            
+            # Run tests
+            for idx, (plaintext, ciphertext, key) in enumerate(vectors, 1):
+                print(f"Test Vector {idx}/{len(vectors)}")
+                
+                # Three tests per vector: encryption, decryption, round-trip
+                tester.verify_encryption(plaintext, key, f"vector {idx}")
+                tester.verify_decryption(ciphertext, key, f"vector {idx}")
+                tester.verify_round_trip(plaintext, key, f"vector {idx}")
+                
+                print()
+            
+            # Print summary and exit
+            exit_code = tester.print_summary()
+            
+            try:
+                tester.port.close()
+            except:
+                pass
+
+            print(f"\n[LOG] Full test transcript saved to {log_file}")
+
     return exit_code
 
 

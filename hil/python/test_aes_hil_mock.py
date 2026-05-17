@@ -1,5 +1,5 @@
 """
-Unit tests for AES HIL Test Framework using Mock FPGA
+Unit tests for AES HIL Test Framework using Mock AES HIL Controller
 
 Tests the Python HIL framework (aes_hil_test.py) against a mock FPGA controller.
 Does not require actual hardware or USB connection.
@@ -28,16 +28,16 @@ import binascii
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(__file__))
 
-from mock_fpga_controller import MockFPGAController, MockSerialPort
+from mock_aes_hil import MockAESHILController, MockAESHILSerialPort
 from aes_hil_test import AESHardwareTest
 
 
-class TestMockFPGAController(unittest.TestCase):
-    """Unit tests for MockFPGAController."""
+class TestMockAESHILController(unittest.TestCase):
+    """Unit tests for MockAESHILController."""
     
     def setUp(self):
         """Create fresh mock FPGA for each test."""
-        self.mock = MockFPGAController(verbose=False)
+        self.mock = MockAESHILController(verbose=False)
     
     def test_key_load(self):
         """Test loading a key."""
@@ -173,19 +173,19 @@ class TestMockFPGAController(unittest.TestCase):
         self.assertEqual(stats['responses_sent'], 1)
 
 
-class TestMockSerialPort(unittest.TestCase):
-    """Unit tests for MockSerialPort."""
+class TestMockAESHILSerialPort(unittest.TestCase):
+    """Unit tests for MockAESHILSerialPort."""
     
     def test_port_initialization(self):
         """Test port initialization."""
-        port = MockSerialPort(port='MOCK_COM3', baudrate=115200)
+        port = MockAESHILSerialPort(port='MOCK_COM3', baudrate=115200)
         self.assertEqual(port.port, 'MOCK_COM3')
         port.close()
     
     def test_read_with_timeout(self):
         """Test read timeout behavior."""
-        mock_fpga = MockFPGAController()
-        port = MockSerialPort(timeout=0.1, mock_fpga=mock_fpga)
+        mock_fpga = MockAESHILController()
+        port = MockAESHILSerialPort(timeout=0.1, mock_fpga=mock_fpga)
         
         # Write incomplete command (no newline)
         port.write(b'K:000102030405060708090A0B0C0D0E0F')
@@ -198,7 +198,7 @@ class TestMockSerialPort(unittest.TestCase):
     
     def test_write_and_read(self):
         """Test basic write/read cycle."""
-        port = MockSerialPort()
+        port = MockAESHILSerialPort()
         
         port.write(b'K:000102030405060708090A0B0C0D0E0F\n')
         response = port.read(100)
@@ -208,7 +208,7 @@ class TestMockSerialPort(unittest.TestCase):
     
     def test_context_manager(self):
         """Test context manager support."""
-        with MockSerialPort() as port:
+        with MockAESHILSerialPort() as port:
             port.write(b'K:000102030405060708090A0B0C0D0E0F\n')
             response = port.read(100)
             self.assertTrue(len(response) > 0)
@@ -219,8 +219,8 @@ class TestAESHardwareTestWithMock(unittest.TestCase):
     
     def setUp(self):
         """Create mock serial port for each test."""
-        self.mock_fpga = MockFPGAController(verbose=False)
-        self.mock_port = MockSerialPort(mock_fpga=self.mock_fpga, timeout=1.0)
+        self.mock_fpga = MockAESHILController(verbose=False)
+        self.mock_port = MockAESHILSerialPort(mock_fpga=self.mock_fpga, timeout=1.0)
     
     def tearDown(self):
         """Clean up."""
@@ -332,8 +332,8 @@ class TestErrorHandling(unittest.TestCase):
     @patch('aes_hil_test.serial.Serial')
     def test_timeout_recovery(self, mock_serial_class):
         """Test recovery from timeout."""
-        mock_fpga = MockFPGAController()
-        mock_port = MockSerialPort(mock_fpga=mock_fpga)
+        mock_fpga = MockAESHILController()
+        mock_port = MockAESHILSerialPort(mock_fpga=mock_fpga)
         mock_serial_class.return_value = mock_port
         
         tester = AESHardwareTest(port='MOCK', verbose=False)
@@ -350,8 +350,8 @@ class TestErrorHandling(unittest.TestCase):
     @patch('aes_hil_test.serial.Serial')
     def test_malformed_response_handling(self, mock_serial_class):
         """Test handling of malformed responses."""
-        mock_fpga = MockFPGAController()
-        mock_port = MockSerialPort(mock_fpga=mock_fpga)
+        mock_fpga = MockAESHILController()
+        mock_port = MockAESHILSerialPort(mock_fpga=mock_fpga)
         mock_serial_class.return_value = mock_port
         
         tester = AESHardwareTest(port='MOCK', verbose=False)
@@ -385,8 +385,8 @@ class TestFIPSVectors(unittest.TestCase):
     def test_all_fips_vectors(self):
         """Test all FIPS-197 vectors with mock FPGA."""
         for i, vector in enumerate(self.vectors):
-            mock_fpga = MockFPGAController()
-            mock_port = MockSerialPort(mock_fpga=mock_fpga)
+            mock_fpga = MockAESHILController()
+            mock_port = MockAESHILSerialPort(mock_fpga=mock_fpga)
             
             with patch('aes_hil_test.serial.Serial', return_value=mock_port):
                 tester = AESHardwareTest(port='MOCK', verbose=False)
@@ -420,8 +420,8 @@ def run_tests():
     suite = unittest.TestSuite()
     
     # Add all test classes
-    suite.addTests(loader.loadTestsFromTestCase(TestMockFPGAController))
-    suite.addTests(loader.loadTestsFromTestCase(TestMockSerialPort))
+    suite.addTests(loader.loadTestsFromTestCase(TestMockAESHILController))
+    suite.addTests(loader.loadTestsFromTestCase(TestMockAESHILSerialPort))
     suite.addTests(loader.loadTestsFromTestCase(TestAESHardwareTestWithMock))
     suite.addTests(loader.loadTestsFromTestCase(TestErrorHandling))
     suite.addTests(loader.loadTestsFromTestCase(TestFIPSVectors))
