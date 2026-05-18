@@ -160,20 +160,22 @@ class AESHardwareTest:
             print(f"  [ERROR] Invalid key format: {key_hex}")
             return False
         
+        # Protocol: K commands do not elicit an echo from the FPGA controller.
+        # Send the command and allow a short processing delay instead of waiting
+        # for a response (prevents spurious timeouts when the FPGA does not echo).
         key_hex = key_hex.upper()
-        response = self._send_command(f"K:{key_hex}")
-        
-        if response is None:
-            return False
-        
-        if response == key_hex:
+        try:
             if self.verbose:
-                print(f"  [KEY] Loaded: {key_hex}")
+                print(f"  [TX] K:{key_hex}")
+            self.port.reset_input_buffer()
+            self.port.write((f"K:{key_hex}\n").encode('ascii'))
+            # Give FPGA a short time to process the command
+            time.sleep(0.01)
+            if self.verbose:
+                print(f"  [KEY] Sent: {key_hex}")
             return True
-        else:
-            print(f"  [ERROR] Key echo mismatch")
-            print(f"    Sent:     {key_hex}")
-            print(f"    Received: {response}")
+        except serial.SerialException as e:
+            print(f"  [ERROR] Serial communication failed: {e}")
             return False
     
     def set_mode(self, mode: int) -> bool:
@@ -190,21 +192,20 @@ class AESHardwareTest:
             print(f"  [ERROR] Invalid mode: {mode} (must be 0 or 1)")
             return False
         
+        # M command does not produce an echo; send and return success if write succeeds
         mode_str = str(mode)
-        response = self._send_command(f"M:{mode_str}")
-        
-        if response is None:
-            return False
-        
-        if response == mode_str:
-            mode_name = "Encryption" if mode == 1 else "Decryption"
+        try:
             if self.verbose:
-                print(f"  [MODE] Set to: {mode_name} (mode={mode})")
+                print(f"  [TX] M:{mode_str}")
+            self.port.reset_input_buffer()
+            self.port.write((f"M:{mode_str}\n").encode('ascii'))
+            time.sleep(0.005)
+            if self.verbose:
+                mode_name = "Encryption" if mode == 1 else "Decryption"
+                print(f"  [MODE] Sent: {mode_name} (mode={mode})")
             return True
-        else:
-            print(f"  [ERROR] Mode echo mismatch")
-            print(f"    Sent:     {mode_str}")
-            print(f"    Received: {response}")
+        except serial.SerialException as e:
+            print(f"  [ERROR] Serial communication failed: {e}")
             return False
     
     def set_data(self, data_hex: str) -> bool:
@@ -221,20 +222,19 @@ class AESHardwareTest:
             print(f"  [ERROR] Invalid data format: {data_hex}")
             return False
         
+        # D command (data load) does not elicit an echo; write and continue
         data_hex = data_hex.upper()
-        response = self._send_command(f"D:{data_hex}")
-        
-        if response is None:
-            return False
-        
-        if response == data_hex:
+        try:
             if self.verbose:
-                print(f"  [DATA] Loaded: {data_hex}")
+                print(f"  [TX] D:{data_hex}")
+            self.port.reset_input_buffer()
+            self.port.write((f"D:{data_hex}\n").encode('ascii'))
+            time.sleep(0.01)
+            if self.verbose:
+                print(f"  [DATA] Sent: {data_hex}")
             return True
-        else:
-            print(f"  [ERROR] Data echo mismatch")
-            print(f"    Sent:     {data_hex}")
-            print(f"    Received: {response}")
+        except serial.SerialException as e:
+            print(f"  [ERROR] Serial communication failed: {e}")
             return False
     
     def execute(self) -> Optional[str]:
