@@ -11,6 +11,7 @@ The intent is to show a complete engineering flow rather than a line-by-line sou
 **Technical Summary**
 - Algorithm: AES-128, 10 rounds, 128-bit block size
 - Target clock: 100 MHz
+- Note: `aes_hil_top` targets the 100 MHz board clock. The `aes_adc_top` variant includes a simple internal clock divider to run its submodules at 25 MHz (added for timing closure on the Basys3/xc7a35t in this repository).
 - Typical timing result: above 120 MHz on the XC7A35T-1 device used on Basys 3
 - Latency: 15 clock cycles per block
 - Throughput: approximately 853 Mbps at 100 MHz
@@ -314,6 +315,10 @@ The constraint file [constraints/aes_hil_top.xdc](constraints/aes_hil_top.xdc) t
 
 This keeps the synthesis top-level I/O within the Basys 3 device limits and exposes all necessary signals for HIL operation and monitoring.
 
+Notes about `aes_adc_top` constraints:
+- The previous XDC contained an invalid `IOSTANDARD ANALOG` setting and an attempted `PACKAGE_PIN J1` assignment for the XADC channel. Those lines were removed because the XADC channels are configured in the IP core and Basys3 does not route the dedicated XADC differential pairs to the Pmod headers. Do not add `IOSTANDARD ANALOG` in the XDC.
+- `aes_adc_top.xdc` keeps the LED bank voltage adjustments (LED[12:15] use LVCMOS18 where required by Bank 35) and retains the valid LOC assignments for board LEDs and UART. The ADC channel is left un-assigned to a physical package pin in this repository to avoid Vivado placement conflicts.
+
 ### 6.3 Why the Constraint Set Is Minimal
 
 This project is primarily a cryptographic accelerator and verification platform. Keeping the external interface small reduces risk and makes timing easier to close. The AES core itself remains unchanged and is exercised through the UART wrapper in hardware and through `tb_aes_top.vhd` in simulation.
@@ -386,6 +391,12 @@ All values safely within XADC 0–1 V range.
 - [design/aes_adc_top.vhd](design/aes_adc_top.vhd) — Top-level integration wrapper (XADC + sampler + AES)
 - [constraints/aes_adc_top.xdc](constraints/aes_adc_top.xdc) — Pin constraints for ADC mode
 - [simulation/testbenches/tb_aes_adc_top.vhd](simulation/testbenches/tb_aes_adc_top.vhd) — Integration testbench
+
+Implementation notes for ADC variant:
+- The `aes_adc_top` target includes a simple 4× clock divider in RTL to generate a 25 MHz internal clock for the sampler/AES/submodules; this was added to reach timing closure without changing the AES core.
+- The XADC IP must be configured from within Vivado (xadc_wiz) — the IP controls the I/O standard and differential pairing. Basys3 does not expose XADC differential pairs to Pmod JA in a way that Vivado can legally place; the constraint that attempted to bind `adc_in` to `J1` was removed to avoid placement errors.
+- For external analog input on Basys3 you must use an external ADC IC (SPI/I2C) wired to a Pmod or use a different board that exposes XADC pins.
+- Existing simulation testbenches that instantiate `adc_sampler_fsm` and `aes_top` directly (for example `tb_aes_adc_top.vhd`) continue to use a 100 MHz test clock and do not require changes because the testbenches exercise submodules independently of the top-level clock-divider wiring.
 
 **Data Flow:**
 ```

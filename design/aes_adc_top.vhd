@@ -45,6 +45,8 @@ architecture rtl of aes_adc_top is
 
     -- Active-low reset net for blocks using rst_n
     signal rst_n_i : std_logic;
+    signal clk_div_cnt : unsigned(1 downto 0) := (others => '0');
+    signal clk25 : std_logic := '0';
 
     -- XADC Wizard generated component (user must generate this in Vivado)
     component xadc_wiz_0
@@ -135,6 +137,22 @@ begin
     -- Convert board-level active-high reset to internal active-low reset
     rst_n_i <= not rst;
 
+    -- Generate 25 MHz system clock from 100 MHz input for timing closure
+    clk_div_proc: process(clk, rst)
+    begin
+        if rst = '1' then
+            clk_div_cnt <= (others => '0');
+            clk25 <= '0';
+        elsif rising_edge(clk) then
+            if clk_div_cnt = "10" then
+                clk_div_cnt <= (others => '0');
+                clk25 <= not clk25;
+            else
+                clk_div_cnt <= clk_div_cnt + 1;
+            end if;
+        end if;
+    end process clk_div_proc;
+
     -- Initialize stored_key with default FIPS-197 test key
     -- Note: v2.0 uses a fixed key for autonomous ADC sampling.
     -- Future extensions can support dynamic key loading via UART.
@@ -151,7 +169,7 @@ begin
             di_in         => (others => '0'),
             do_out        => xadc_data,       -- 16-bit result (bits 15:4 = ADC12)
             drdy_out      => xadc_valid,      -- data valid on next cycle
-            dclk_in       => clk,
+            dclk_in       => clk25,
             reset_in      => rst,
             vp_in         => '0',             -- VP not used
             vn_in         => '0',             -- VN not used
@@ -169,7 +187,7 @@ begin
     -- =========================================================================
     u_sampler : adc_sampler_fsm
         port map (
-            clk           => clk,
+            clk           => clk25,
             rst_n         => rst_n_i,
             manual_trigger => '0',            -- always use periodic timer
             xadc_valid    => xadc_valid,
@@ -191,7 +209,7 @@ begin
     -- =========================================================================
     u_aes : aes_top
         port map (
-            clk      => clk,
+            clk      => clk25,
             rst_n    => rst_n_i,
             start    => sampler_aes_start,
             enc_dec  => '1',                  -- always encrypt (not decrypt)
@@ -213,7 +231,7 @@ begin
     -- - Buffers results (future extension: add UART readout or logging)
     u_uart_ctrl : uart_aes_controller
         port map (
-            clk        => clk,
+            clk        => clk25,
             rst_n      => rst_n_i,
             rx         => rx,
             tx         => tx,

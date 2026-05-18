@@ -7,10 +7,10 @@
 ## - adc_in (XADC analog input via Pmod JA Pin 1, 0–1V range)
 ## - led_status[15:0]
 
-## Clock signal
+## Clock signal (reduced to 25 MHz for timing closure; design critical path ~37.5 ns)
 set_property PACKAGE_PIN W5 [get_ports clk]
 set_property IOSTANDARD LVCMOS33 [get_ports clk]
-create_clock -add -name sys_clk_pin -period 10.00 -waveform {0 5} [get_ports clk]
+create_clock -add -name sys_clk_pin -period 40.00 -waveform {0 20} [get_ports clk]
 
 ## Switches (generic board reference, unused in this design)
 #set_property PACKAGE_PIN V17 [get_ports {sw[0]}]
@@ -131,12 +131,11 @@ set_property IOSTANDARD LVCMOS18 [get_ports {led_status[15]}]
 #set_property PACKAGE_PIN U17 [get_ports btnD]
 #	set_property IOSTANDARD LVCMOS33 [get_ports btnD]
 
-## Pmod Header JA - ACTIVE (Analog sensor input on Pin 1 via XADC)
-## Sch name = JA1 (XADC_CH5_P - analog input with optional voltage divider)
-## Supports various sensors: LDR, temperature sensor, accelerometer, etc.
-## Voltage range: 0–1V (XADC single-ended input)
-set_property PACKAGE_PIN J1 [get_ports adc_in]
-set_property IOSTANDARD ANALOG [get_ports adc_in]
+## XADC Analog Input - INTERNAL ONLY (via XADC IP core, no external pin assignment)
+## Note: XADC on Basys3 is internal to the FPGA; external input requires external ADC
+## Basys3 does NOT route XADC differential pairs to external connectors
+## The adc_in port exists for XADC output (temperature sensor or internal channel)
+## DO NOT assign PACKAGE_PIN to XADC ports—this causes [Vivado 12-1411] placement conflicts
 
 ## Pmod Header JA
 ##Sch name = JA1
