@@ -19,8 +19,9 @@
 --     uart_aes_controller (existing) handles UART communication
 --     Key is loaded once from PC, then reused for all samples
 --
---   Hardware Connections (example: LDR via Pmod JA):
---     Pmod JA Pin 1 (XADC_CH5_P) = sensor analog output (0–1V)
+--   Hardware Connections (example: LDR via XADC header):
+--     JXADC XA1_P / XADC_CH5_P = sensor analog output (0–1V)
+--     Use Basys3 3.3V and GND for the voltage divider; USB is for UART, not sensor power
 --     USB UART RX/TX = PC serial connection
 --     LED[15:0] = status indicators
 --

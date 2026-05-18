@@ -4,7 +4,7 @@
 ## - clk
 ## - rst
 ## - rx, tx (USB UART)
-## - adc_in (XADC analog input via Pmod JA Pin 1, 0–1V range)
+## - adc_in (XADC analog input via JXADC XA1_P, 0–1V range)
 ## - led_status[15:0]
 
 ## Clock signal (reduced to 25 MHz for timing closure; design critical path ~37.5 ns)
@@ -131,11 +131,10 @@ set_property IOSTANDARD LVCMOS18 [get_ports {led_status[15]}]
 #set_property PACKAGE_PIN U17 [get_ports btnD]
 #	set_property IOSTANDARD LVCMOS33 [get_ports btnD]
 
-## XADC Analog Input - INTERNAL ONLY (via XADC IP core, no external pin assignment)
-## Note: XADC on Basys3 is internal to the FPGA; external input requires external ADC
-## Basys3 does NOT route XADC differential pairs to external connectors
-## The adc_in port exists for XADC output (temperature sensor or internal channel)
-## DO NOT assign PACKAGE_PIN to XADC ports—this causes [Vivado 12-1411] placement conflicts
+## XADC Analog Input - INTERNAL ONLY (via XADC IP core, no normal PACKAGE_PIN assignment)
+## Note: On Basys3, route the analog source to the dedicated JXADC header and keep it within 0–1V
+## USB does not power the sensor; use the board 3.3V and GND rails or an external supply with shared ground
+## DO NOT assign PACKAGE_PIN to adc_in/XADC ports—this causes [Vivado 12-1411] placement conflicts
 
 ## Pmod Header JA
 ##Sch name = JA1

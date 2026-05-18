@@ -5,7 +5,7 @@ Logs autonomous ADC samples from aes_adc_top + XADC, decrypts results, saves to 
 
 Hardware Platform:
     - Basys3 FPGA with aes_adc_top design
-    - XADC channel 5 (Pmod JA Pin 1) samples the analog input every 5 seconds
+    - XADC channel 5 (JXADC XA1_P / XADC_CH5_P) samples the analog input every 5 seconds
     - AES-128 encrypts each sample autonomously
     - Results transmitted via UART at 115,200 bps
 

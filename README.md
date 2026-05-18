@@ -357,7 +357,7 @@ The AES-128 accelerator now includes an optional **autonomous analog sensor samp
 - **Sampling Period:** Every 5 seconds (configurable)
 - **ADC Resolution:** 12-bit (0–4095 range)
 - **Technology:** Integrated XADC (Xilinx System Monitor hardmacro on XC7A35T)
-- **Voltage Range:** 0–1 V single-ended (via Pmod JA Pin 1)
+- **Voltage Range:** 0–1 V single-ended (via the Basys 3 XADC header, JXADC / XA1_P)
 - **Latency per Sample:** ~3 ms (UART transmission dominates)
 - **No External ADC IC Required:** Uses on-chip XADC
 
@@ -370,11 +370,11 @@ The AES-128 accelerator now includes an optional **autonomous analog sensor samp
 
 **Wiring:**
 ```
-+3.3V (Basys3) → [LDR] → Pmod JA Pin 1 (XADC_CH5_P)
-                           ↓
-                         [10kΩ]
-                           ↓
-                         GND (Basys3)
+Basys3 3.3V → [LDR] → XADC input (JXADC XA1_P / XADC_CH5_P)
+                               ↓
+                            [10kΩ]
+                               ↓
+                        Basys3 GND
 ```
 
 **Voltage Behavior:**
@@ -394,8 +394,9 @@ All values safely within XADC 0–1 V range.
 
 Implementation notes for ADC variant:
 - The `aes_adc_top` target includes a simple 4× clock divider in RTL to generate a 25 MHz internal clock for the sampler/AES/submodules; this was added to reach timing closure without changing the AES core.
-- The XADC IP must be configured from within Vivado (xadc_wiz) — the IP controls the I/O standard and differential pairing. Basys3 does not expose XADC differential pairs to Pmod JA in a way that Vivado can legally place; the constraint that attempted to bind `adc_in` to `J1` was removed to avoid placement errors.
-- For external analog input on Basys3 you must use an external ADC IC (SPI/I2C) wired to a Pmod or use a different board that exposes XADC pins.
+- The XADC IP must be configured from within Vivado (xadc_wiz) — the IP controls the I/O standard and differential pairing. On Basys 3, connect the analog source to the dedicated JXADC header and keep the signal inside the XADC 0–1 V range; do not add a normal `PACKAGE_PIN` assignment for `adc_in`.
+- USB does not power the analog sensor. Use the board's 3.3 V and GND rails, or an external supply with a shared ground, for the voltage divider.
+- For external analog input on Basys3 you still need an analog source such as a sensor or potentiometer divider; the FPGA does not generate the voltage to sample.
 - Existing simulation testbenches that instantiate `adc_sampler_fsm` and `aes_top` directly (for example `tb_aes_adc_top.vhd`) continue to use a 100 MHz test clock and do not require changes because the testbenches exercise submodules independently of the top-level clock-divider wiring.
 
 **Data Flow:**
