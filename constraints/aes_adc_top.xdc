@@ -52,11 +52,11 @@ set_property IOSTANDARD LVCMOS33 [get_ports rst]
 
 ## USB UART Interface (active in this design)
 ## RX: data from host PC to FPGA
-set_property PACKAGE_PIN A9 [get_ports rx]
+set_property PACKAGE_PIN B18 [get_ports rx]
 set_property IOSTANDARD LVCMOS33 [get_ports rx]
 
 ## TX: data from FPGA to host PC
-set_property PACKAGE_PIN B10 [get_ports tx]
+set_property PACKAGE_PIN A18 [get_ports tx]
 set_property IOSTANDARD LVCMOS33 [get_ports tx]
 
 ## LEDs (all 16 used for status indication)
