@@ -1,0 +1,1343 @@
+======================================================================
+AES-128 FPGA Hardware-in-the-Loop Test Suite
+======================================================================
+Port: COM6, Baudrate: 115200 bps, Timeout: 1.0 s
+======================================================================
+
+Log file: C:\amd-vivado-projects\aes_vscode\hil\results\hil_test_results_20260518_164906.txt
+
+Loaded 264 test vectors from C:\amd-vivado-projects\aes_vscode\hil\vectors\test_vectors.txt
+
+Test Vector 1/264
+    ✓ PASS Encryption (vector 1)
+    ✓ PASS Decryption (vector 1)
+    ✓ PASS Round-trip (vector 1)
+
+Test Vector 2/264
+    ✓ PASS Encryption (vector 2)
+    ✓ PASS Decryption (vector 2)
+    ✓ PASS Round-trip (vector 2)
+
+Test Vector 3/264
+    ✓ PASS Encryption (vector 3)
+    ✓ PASS Decryption (vector 3)
+    ✓ PASS Round-trip (vector 3)
+
+Test Vector 4/264
+    ✓ PASS Encryption (vector 4)
+    ✓ PASS Decryption (vector 4)
+    ✓ PASS Round-trip (vector 4)
+
+Test Vector 5/264
+    ✓ PASS Encryption (vector 5)
+    ✓ PASS Decryption (vector 5)
+    ✓ PASS Round-trip (vector 5)
+
+Test Vector 6/264
+    ✓ PASS Encryption (vector 6)
+    ✓ PASS Decryption (vector 6)
+    ✓ PASS Round-trip (vector 6)
+
+Test Vector 7/264
+    ✓ PASS Encryption (vector 7)
+    ✓ PASS Decryption (vector 7)
+    ✓ PASS Round-trip (vector 7)
+
+Test Vector 8/264
+    ✓ PASS Encryption (vector 8)
+    ✓ PASS Decryption (vector 8)
+    ✓ PASS Round-trip (vector 8)
+
+Test Vector 9/264
+    ✓ PASS Encryption (vector 9)
+    ✓ PASS Decryption (vector 9)
+    ✓ PASS Round-trip (vector 9)
+
+Test Vector 10/264
+    ✓ PASS Encryption (vector 10)
+    ✓ PASS Decryption (vector 10)
+    ✓ PASS Round-trip (vector 10)
+
+Test Vector 11/264
+    ✓ PASS Encryption (vector 11)
+    ✓ PASS Decryption (vector 11)
+    ✓ PASS Round-trip (vector 11)
+
+Test Vector 12/264
+    ✓ PASS Encryption (vector 12)
+    ✓ PASS Decryption (vector 12)
+    ✓ PASS Round-trip (vector 12)
+
+Test Vector 13/264
+    ✓ PASS Encryption (vector 13)
+    ✓ PASS Decryption (vector 13)
+    ✓ PASS Round-trip (vector 13)
+
+Test Vector 14/264
+    ✓ PASS Encryption (vector 14)
+    ✓ PASS Decryption (vector 14)
+    ✓ PASS Round-trip (vector 14)
+
+Test Vector 15/264
+    ✓ PASS Encryption (vector 15)
+    ✓ PASS Decryption (vector 15)
+    ✓ PASS Round-trip (vector 15)
+
+Test Vector 16/264
+    ✓ PASS Encryption (vector 16)
+    ✓ PASS Decryption (vector 16)
+    ✓ PASS Round-trip (vector 16)
+
+Test Vector 17/264
+    ✓ PASS Encryption (vector 17)
+    ✓ PASS Decryption (vector 17)
+    ✓ PASS Round-trip (vector 17)
+
+Test Vector 18/264
+    ✓ PASS Encryption (vector 18)
+    ✓ PASS Decryption (vector 18)
+    ✓ PASS Round-trip (vector 18)
+
+Test Vector 19/264
+    ✓ PASS Encryption (vector 19)
+    ✓ PASS Decryption (vector 19)
+    ✓ PASS Round-trip (vector 19)
+
+Test Vector 20/264
+    ✓ PASS Encryption (vector 20)
+    ✓ PASS Decryption (vector 20)
+    ✓ PASS Round-trip (vector 20)
+
+Test Vector 21/264
+    ✓ PASS Encryption (vector 21)
+    ✓ PASS Decryption (vector 21)
+    ✓ PASS Round-trip (vector 21)
+
+Test Vector 22/264
+    ✓ PASS Encryption (vector 22)
+    ✓ PASS Decryption (vector 22)
+    ✓ PASS Round-trip (vector 22)
+
+Test Vector 23/264
+    ✓ PASS Encryption (vector 23)
+    ✓ PASS Decryption (vector 23)
+    ✓ PASS Round-trip (vector 23)
+
+Test Vector 24/264
+    ✓ PASS Encryption (vector 24)
+    ✓ PASS Decryption (vector 24)
+    ✓ PASS Round-trip (vector 24)
+
+Test Vector 25/264
+    ✓ PASS Encryption (vector 25)
+    ✓ PASS Decryption (vector 25)
+    ✓ PASS Round-trip (vector 25)
+
+Test Vector 26/264
+    ✓ PASS Encryption (vector 26)
+    ✓ PASS Decryption (vector 26)
+    ✓ PASS Round-trip (vector 26)
+
+Test Vector 27/264
+    ✓ PASS Encryption (vector 27)
+    ✓ PASS Decryption (vector 27)
+    ✓ PASS Round-trip (vector 27)
+
+Test Vector 28/264
+    ✓ PASS Encryption (vector 28)
+    ✓ PASS Decryption (vector 28)
+    ✓ PASS Round-trip (vector 28)
+
+Test Vector 29/264
+    ✓ PASS Encryption (vector 29)
+    ✓ PASS Decryption (vector 29)
+    ✓ PASS Round-trip (vector 29)
+
+Test Vector 30/264
+    ✓ PASS Encryption (vector 30)
+    ✓ PASS Decryption (vector 30)
+    ✓ PASS Round-trip (vector 30)
+
+Test Vector 31/264
+    ✓ PASS Encryption (vector 31)
+    ✓ PASS Decryption (vector 31)
+    ✓ PASS Round-trip (vector 31)
+
+Test Vector 32/264
+    ✓ PASS Encryption (vector 32)
+    ✓ PASS Decryption (vector 32)
+    ✓ PASS Round-trip (vector 32)
+
+Test Vector 33/264
+    ✓ PASS Encryption (vector 33)
+    ✓ PASS Decryption (vector 33)
+    ✓ PASS Round-trip (vector 33)
+
+Test Vector 34/264
+    ✓ PASS Encryption (vector 34)
+    ✓ PASS Decryption (vector 34)
+    ✓ PASS Round-trip (vector 34)
+
+Test Vector 35/264
+    ✓ PASS Encryption (vector 35)
+    ✓ PASS Decryption (vector 35)
+    ✓ PASS Round-trip (vector 35)
+
+Test Vector 36/264
+    ✓ PASS Encryption (vector 36)
+    ✓ PASS Decryption (vector 36)
+    ✓ PASS Round-trip (vector 36)
+
+Test Vector 37/264
+    ✓ PASS Encryption (vector 37)
+    ✓ PASS Decryption (vector 37)
+    ✓ PASS Round-trip (vector 37)
+
+Test Vector 38/264
+    ✓ PASS Encryption (vector 38)
+    ✓ PASS Decryption (vector 38)
+    ✓ PASS Round-trip (vector 38)
+
+Test Vector 39/264
+    ✓ PASS Encryption (vector 39)
+    ✓ PASS Decryption (vector 39)
+    ✓ PASS Round-trip (vector 39)
+
+Test Vector 40/264
+    ✓ PASS Encryption (vector 40)
+    ✓ PASS Decryption (vector 40)
+    ✓ PASS Round-trip (vector 40)
+
+Test Vector 41/264
+    ✓ PASS Encryption (vector 41)
+    ✓ PASS Decryption (vector 41)
+    ✓ PASS Round-trip (vector 41)
+
+Test Vector 42/264
+    ✓ PASS Encryption (vector 42)
+    ✓ PASS Decryption (vector 42)
+    ✓ PASS Round-trip (vector 42)
+
+Test Vector 43/264
+    ✓ PASS Encryption (vector 43)
+    ✓ PASS Decryption (vector 43)
+    ✓ PASS Round-trip (vector 43)
+
+Test Vector 44/264
+    ✓ PASS Encryption (vector 44)
+    ✓ PASS Decryption (vector 44)
+    ✓ PASS Round-trip (vector 44)
+
+Test Vector 45/264
+    ✓ PASS Encryption (vector 45)
+    ✓ PASS Decryption (vector 45)
+    ✓ PASS Round-trip (vector 45)
+
+Test Vector 46/264
+    ✓ PASS Encryption (vector 46)
+    ✓ PASS Decryption (vector 46)
+    ✓ PASS Round-trip (vector 46)
+
+Test Vector 47/264
+    ✓ PASS Encryption (vector 47)
+    ✓ PASS Decryption (vector 47)
+    ✓ PASS Round-trip (vector 47)
+
+Test Vector 48/264
+    ✓ PASS Encryption (vector 48)
+    ✓ PASS Decryption (vector 48)
+    ✓ PASS Round-trip (vector 48)
+
+Test Vector 49/264
+    ✓ PASS Encryption (vector 49)
+    ✓ PASS Decryption (vector 49)
+    ✓ PASS Round-trip (vector 49)
+
+Test Vector 50/264
+    ✓ PASS Encryption (vector 50)
+    ✓ PASS Decryption (vector 50)
+    ✓ PASS Round-trip (vector 50)
+
+Test Vector 51/264
+    ✓ PASS Encryption (vector 51)
+    ✓ PASS Decryption (vector 51)
+    ✓ PASS Round-trip (vector 51)
+
+Test Vector 52/264
+    ✓ PASS Encryption (vector 52)
+    ✓ PASS Decryption (vector 52)
+    ✓ PASS Round-trip (vector 52)
+
+Test Vector 53/264
+    ✓ PASS Encryption (vector 53)
+    ✓ PASS Decryption (vector 53)
+    ✓ PASS Round-trip (vector 53)
+
+Test Vector 54/264
+    ✓ PASS Encryption (vector 54)
+    ✓ PASS Decryption (vector 54)
+    ✓ PASS Round-trip (vector 54)
+
+Test Vector 55/264
+    ✓ PASS Encryption (vector 55)
+    ✓ PASS Decryption (vector 55)
+    ✓ PASS Round-trip (vector 55)
+
+Test Vector 56/264
+    ✓ PASS Encryption (vector 56)
+    ✓ PASS Decryption (vector 56)
+    ✓ PASS Round-trip (vector 56)
+
+Test Vector 57/264
+    ✓ PASS Encryption (vector 57)
+    ✓ PASS Decryption (vector 57)
+    ✓ PASS Round-trip (vector 57)
+
+Test Vector 58/264
+    ✓ PASS Encryption (vector 58)
+    ✓ PASS Decryption (vector 58)
+    ✓ PASS Round-trip (vector 58)
+
+Test Vector 59/264
+    ✓ PASS Encryption (vector 59)
+    ✓ PASS Decryption (vector 59)
+    ✓ PASS Round-trip (vector 59)
+
+Test Vector 60/264
+    ✓ PASS Encryption (vector 60)
+    ✓ PASS Decryption (vector 60)
+    ✓ PASS Round-trip (vector 60)
+
+Test Vector 61/264
+    ✓ PASS Encryption (vector 61)
+    ✓ PASS Decryption (vector 61)
+    ✓ PASS Round-trip (vector 61)
+
+Test Vector 62/264
+    ✓ PASS Encryption (vector 62)
+    ✓ PASS Decryption (vector 62)
+    ✓ PASS Round-trip (vector 62)
+
+Test Vector 63/264
+    ✓ PASS Encryption (vector 63)
+    ✓ PASS Decryption (vector 63)
+    ✓ PASS Round-trip (vector 63)
+
+Test Vector 64/264
+    ✓ PASS Encryption (vector 64)
+    ✓ PASS Decryption (vector 64)
+    ✓ PASS Round-trip (vector 64)
+
+Test Vector 65/264
+    ✓ PASS Encryption (vector 65)
+    ✓ PASS Decryption (vector 65)
+    ✓ PASS Round-trip (vector 65)
+
+Test Vector 66/264
+    ✓ PASS Encryption (vector 66)
+    ✓ PASS Decryption (vector 66)
+    ✓ PASS Round-trip (vector 66)
+
+Test Vector 67/264
+    ✓ PASS Encryption (vector 67)
+    ✓ PASS Decryption (vector 67)
+    ✓ PASS Round-trip (vector 67)
+
+Test Vector 68/264
+    ✓ PASS Encryption (vector 68)
+    ✓ PASS Decryption (vector 68)
+    ✓ PASS Round-trip (vector 68)
+
+Test Vector 69/264
+    ✓ PASS Encryption (vector 69)
+    ✓ PASS Decryption (vector 69)
+    ✓ PASS Round-trip (vector 69)
+
+Test Vector 70/264
+    ✓ PASS Encryption (vector 70)
+    ✓ PASS Decryption (vector 70)
+    ✓ PASS Round-trip (vector 70)
+
+Test Vector 71/264
+    ✓ PASS Encryption (vector 71)
+    ✓ PASS Decryption (vector 71)
+    ✓ PASS Round-trip (vector 71)
+
+Test Vector 72/264
+    ✓ PASS Encryption (vector 72)
+    ✓ PASS Decryption (vector 72)
+    ✓ PASS Round-trip (vector 72)
+
+Test Vector 73/264
+    ✓ PASS Encryption (vector 73)
+    ✓ PASS Decryption (vector 73)
+    ✓ PASS Round-trip (vector 73)
+
+Test Vector 74/264
+    ✓ PASS Encryption (vector 74)
+    ✓ PASS Decryption (vector 74)
+    ✓ PASS Round-trip (vector 74)
+
+Test Vector 75/264
+    ✓ PASS Encryption (vector 75)
+    ✓ PASS Decryption (vector 75)
+    ✓ PASS Round-trip (vector 75)
+
+Test Vector 76/264
+    ✓ PASS Encryption (vector 76)
+    ✓ PASS Decryption (vector 76)
+    ✓ PASS Round-trip (vector 76)
+
+Test Vector 77/264
+    ✓ PASS Encryption (vector 77)
+    ✓ PASS Decryption (vector 77)
+    ✓ PASS Round-trip (vector 77)
+
+Test Vector 78/264
+    ✓ PASS Encryption (vector 78)
+    ✓ PASS Decryption (vector 78)
+    ✓ PASS Round-trip (vector 78)
+
+Test Vector 79/264
+    ✓ PASS Encryption (vector 79)
+    ✓ PASS Decryption (vector 79)
+    ✓ PASS Round-trip (vector 79)
+
+Test Vector 80/264
+    ✓ PASS Encryption (vector 80)
+    ✓ PASS Decryption (vector 80)
+    ✓ PASS Round-trip (vector 80)
+
+Test Vector 81/264
+    ✓ PASS Encryption (vector 81)
+    ✓ PASS Decryption (vector 81)
+    ✓ PASS Round-trip (vector 81)
+
+Test Vector 82/264
+    ✓ PASS Encryption (vector 82)
+    ✓ PASS Decryption (vector 82)
+    ✓ PASS Round-trip (vector 82)
+
+Test Vector 83/264
+    ✓ PASS Encryption (vector 83)
+    ✓ PASS Decryption (vector 83)
+    ✓ PASS Round-trip (vector 83)
+
+Test Vector 84/264
+    ✓ PASS Encryption (vector 84)
+    ✓ PASS Decryption (vector 84)
+    ✓ PASS Round-trip (vector 84)
+
+Test Vector 85/264
+    ✓ PASS Encryption (vector 85)
+    ✓ PASS Decryption (vector 85)
+    ✓ PASS Round-trip (vector 85)
+
+Test Vector 86/264
+    ✓ PASS Encryption (vector 86)
+    ✓ PASS Decryption (vector 86)
+    ✓ PASS Round-trip (vector 86)
+
+Test Vector 87/264
+    ✓ PASS Encryption (vector 87)
+    ✓ PASS Decryption (vector 87)
+    ✓ PASS Round-trip (vector 87)
+
+Test Vector 88/264
+    ✓ PASS Encryption (vector 88)
+    ✓ PASS Decryption (vector 88)
+    ✓ PASS Round-trip (vector 88)
+
+Test Vector 89/264
+    ✓ PASS Encryption (vector 89)
+    ✓ PASS Decryption (vector 89)
+    ✓ PASS Round-trip (vector 89)
+
+Test Vector 90/264
+    ✓ PASS Encryption (vector 90)
+    ✓ PASS Decryption (vector 90)
+    ✓ PASS Round-trip (vector 90)
+
+Test Vector 91/264
+    ✓ PASS Encryption (vector 91)
+    ✓ PASS Decryption (vector 91)
+    ✓ PASS Round-trip (vector 91)
+
+Test Vector 92/264
+    ✓ PASS Encryption (vector 92)
+    ✓ PASS Decryption (vector 92)
+    ✓ PASS Round-trip (vector 92)
+
+Test Vector 93/264
+    ✓ PASS Encryption (vector 93)
+    ✓ PASS Decryption (vector 93)
+    ✓ PASS Round-trip (vector 93)
+
+Test Vector 94/264
+    ✓ PASS Encryption (vector 94)
+    ✓ PASS Decryption (vector 94)
+    ✓ PASS Round-trip (vector 94)
+
+Test Vector 95/264
+    ✓ PASS Encryption (vector 95)
+    ✓ PASS Decryption (vector 95)
+    ✓ PASS Round-trip (vector 95)
+
+Test Vector 96/264
+    ✓ PASS Encryption (vector 96)
+    ✓ PASS Decryption (vector 96)
+    ✓ PASS Round-trip (vector 96)
+
+Test Vector 97/264
+    ✓ PASS Encryption (vector 97)
+    ✓ PASS Decryption (vector 97)
+    ✓ PASS Round-trip (vector 97)
+
+Test Vector 98/264
+    ✓ PASS Encryption (vector 98)
+    ✓ PASS Decryption (vector 98)
+    ✓ PASS Round-trip (vector 98)
+
+Test Vector 99/264
+    ✓ PASS Encryption (vector 99)
+    ✓ PASS Decryption (vector 99)
+    ✓ PASS Round-trip (vector 99)
+
+Test Vector 100/264
+    ✓ PASS Encryption (vector 100)
+    ✓ PASS Decryption (vector 100)
+    ✓ PASS Round-trip (vector 100)
+
+Test Vector 101/264
+    ✓ PASS Encryption (vector 101)
+    ✓ PASS Decryption (vector 101)
+    ✓ PASS Round-trip (vector 101)
+
+Test Vector 102/264
+    ✓ PASS Encryption (vector 102)
+    ✓ PASS Decryption (vector 102)
+    ✓ PASS Round-trip (vector 102)
+
+Test Vector 103/264
+    ✓ PASS Encryption (vector 103)
+    ✓ PASS Decryption (vector 103)
+    ✓ PASS Round-trip (vector 103)
+
+Test Vector 104/264
+    ✓ PASS Encryption (vector 104)
+    ✓ PASS Decryption (vector 104)
+    ✓ PASS Round-trip (vector 104)
+
+Test Vector 105/264
+    ✓ PASS Encryption (vector 105)
+    ✓ PASS Decryption (vector 105)
+    ✓ PASS Round-trip (vector 105)
+
+Test Vector 106/264
+    ✓ PASS Encryption (vector 106)
+    ✓ PASS Decryption (vector 106)
+    ✓ PASS Round-trip (vector 106)
+
+Test Vector 107/264
+    ✓ PASS Encryption (vector 107)
+    ✓ PASS Decryption (vector 107)
+    ✓ PASS Round-trip (vector 107)
+
+Test Vector 108/264
+    ✓ PASS Encryption (vector 108)
+    ✓ PASS Decryption (vector 108)
+    ✓ PASS Round-trip (vector 108)
+
+Test Vector 109/264
+    ✓ PASS Encryption (vector 109)
+    ✓ PASS Decryption (vector 109)
+    ✓ PASS Round-trip (vector 109)
+
+Test Vector 110/264
+    ✓ PASS Encryption (vector 110)
+    ✓ PASS Decryption (vector 110)
+    ✓ PASS Round-trip (vector 110)
+
+Test Vector 111/264
+    ✓ PASS Encryption (vector 111)
+    ✓ PASS Decryption (vector 111)
+    ✓ PASS Round-trip (vector 111)
+
+Test Vector 112/264
+    ✓ PASS Encryption (vector 112)
+    ✓ PASS Decryption (vector 112)
+    ✓ PASS Round-trip (vector 112)
+
+Test Vector 113/264
+    ✓ PASS Encryption (vector 113)
+    ✓ PASS Decryption (vector 113)
+    ✓ PASS Round-trip (vector 113)
+
+Test Vector 114/264
+    ✓ PASS Encryption (vector 114)
+    ✓ PASS Decryption (vector 114)
+    ✓ PASS Round-trip (vector 114)
+
+Test Vector 115/264
+    ✓ PASS Encryption (vector 115)
+    ✓ PASS Decryption (vector 115)
+    ✓ PASS Round-trip (vector 115)
+
+Test Vector 116/264
+    ✓ PASS Encryption (vector 116)
+    ✓ PASS Decryption (vector 116)
+    ✓ PASS Round-trip (vector 116)
+
+Test Vector 117/264
+    ✓ PASS Encryption (vector 117)
+    ✓ PASS Decryption (vector 117)
+    ✓ PASS Round-trip (vector 117)
+
+Test Vector 118/264
+    ✓ PASS Encryption (vector 118)
+    ✓ PASS Decryption (vector 118)
+    ✓ PASS Round-trip (vector 118)
+
+Test Vector 119/264
+    ✓ PASS Encryption (vector 119)
+    ✓ PASS Decryption (vector 119)
+    ✓ PASS Round-trip (vector 119)
+
+Test Vector 120/264
+    ✓ PASS Encryption (vector 120)
+    ✓ PASS Decryption (vector 120)
+    ✓ PASS Round-trip (vector 120)
+
+Test Vector 121/264
+    ✓ PASS Encryption (vector 121)
+    ✓ PASS Decryption (vector 121)
+    ✓ PASS Round-trip (vector 121)
+
+Test Vector 122/264
+    ✓ PASS Encryption (vector 122)
+    ✓ PASS Decryption (vector 122)
+    ✓ PASS Round-trip (vector 122)
+
+Test Vector 123/264
+    ✓ PASS Encryption (vector 123)
+    ✓ PASS Decryption (vector 123)
+    ✓ PASS Round-trip (vector 123)
+
+Test Vector 124/264
+    ✓ PASS Encryption (vector 124)
+    ✓ PASS Decryption (vector 124)
+    ✓ PASS Round-trip (vector 124)
+
+Test Vector 125/264
+    ✓ PASS Encryption (vector 125)
+    ✓ PASS Decryption (vector 125)
+    ✓ PASS Round-trip (vector 125)
+
+Test Vector 126/264
+    ✓ PASS Encryption (vector 126)
+    ✓ PASS Decryption (vector 126)
+    ✓ PASS Round-trip (vector 126)
+
+Test Vector 127/264
+    ✓ PASS Encryption (vector 127)
+    ✓ PASS Decryption (vector 127)
+    ✓ PASS Round-trip (vector 127)
+
+Test Vector 128/264
+    ✓ PASS Encryption (vector 128)
+    ✓ PASS Decryption (vector 128)
+    ✓ PASS Round-trip (vector 128)
+
+Test Vector 129/264
+    ✓ PASS Encryption (vector 129)
+    ✓ PASS Decryption (vector 129)
+    ✓ PASS Round-trip (vector 129)
+
+Test Vector 130/264
+    ✓ PASS Encryption (vector 130)
+    ✓ PASS Decryption (vector 130)
+    ✓ PASS Round-trip (vector 130)
+
+Test Vector 131/264
+    ✓ PASS Encryption (vector 131)
+    ✓ PASS Decryption (vector 131)
+    ✓ PASS Round-trip (vector 131)
+
+Test Vector 132/264
+    ✓ PASS Encryption (vector 132)
+    ✓ PASS Decryption (vector 132)
+    ✓ PASS Round-trip (vector 132)
+
+Test Vector 133/264
+    ✓ PASS Encryption (vector 133)
+    ✓ PASS Decryption (vector 133)
+    ✓ PASS Round-trip (vector 133)
+
+Test Vector 134/264
+    ✓ PASS Encryption (vector 134)
+    ✓ PASS Decryption (vector 134)
+    ✓ PASS Round-trip (vector 134)
+
+Test Vector 135/264
+    ✓ PASS Encryption (vector 135)
+    ✓ PASS Decryption (vector 135)
+    ✓ PASS Round-trip (vector 135)
+
+Test Vector 136/264
+    ✓ PASS Encryption (vector 136)
+    ✓ PASS Decryption (vector 136)
+    ✓ PASS Round-trip (vector 136)
+
+Test Vector 137/264
+    ✓ PASS Encryption (vector 137)
+    ✓ PASS Decryption (vector 137)
+    ✓ PASS Round-trip (vector 137)
+
+Test Vector 138/264
+    ✓ PASS Encryption (vector 138)
+    ✓ PASS Decryption (vector 138)
+    ✓ PASS Round-trip (vector 138)
+
+Test Vector 139/264
+    ✓ PASS Encryption (vector 139)
+    ✓ PASS Decryption (vector 139)
+    ✓ PASS Round-trip (vector 139)
+
+Test Vector 140/264
+    ✓ PASS Encryption (vector 140)
+    ✓ PASS Decryption (vector 140)
+    ✓ PASS Round-trip (vector 140)
+
+Test Vector 141/264
+    ✓ PASS Encryption (vector 141)
+    ✓ PASS Decryption (vector 141)
+    ✓ PASS Round-trip (vector 141)
+
+Test Vector 142/264
+    ✓ PASS Encryption (vector 142)
+    ✓ PASS Decryption (vector 142)
+    ✓ PASS Round-trip (vector 142)
+
+Test Vector 143/264
+    ✓ PASS Encryption (vector 143)
+    ✓ PASS Decryption (vector 143)
+    ✓ PASS Round-trip (vector 143)
+
+Test Vector 144/264
+    ✓ PASS Encryption (vector 144)
+    ✓ PASS Decryption (vector 144)
+    ✓ PASS Round-trip (vector 144)
+
+Test Vector 145/264
+    ✓ PASS Encryption (vector 145)
+    ✓ PASS Decryption (vector 145)
+    ✓ PASS Round-trip (vector 145)
+
+Test Vector 146/264
+    ✓ PASS Encryption (vector 146)
+    ✓ PASS Decryption (vector 146)
+    ✓ PASS Round-trip (vector 146)
+
+Test Vector 147/264
+    ✓ PASS Encryption (vector 147)
+    ✓ PASS Decryption (vector 147)
+    ✓ PASS Round-trip (vector 147)
+
+Test Vector 148/264
+    ✓ PASS Encryption (vector 148)
+    ✓ PASS Decryption (vector 148)
+    ✓ PASS Round-trip (vector 148)
+
+Test Vector 149/264
+    ✓ PASS Encryption (vector 149)
+    ✓ PASS Decryption (vector 149)
+    ✓ PASS Round-trip (vector 149)
+
+Test Vector 150/264
+    ✓ PASS Encryption (vector 150)
+    ✓ PASS Decryption (vector 150)
+    ✓ PASS Round-trip (vector 150)
+
+Test Vector 151/264
+    ✓ PASS Encryption (vector 151)
+    ✓ PASS Decryption (vector 151)
+    ✓ PASS Round-trip (vector 151)
+
+Test Vector 152/264
+    ✓ PASS Encryption (vector 152)
+    ✓ PASS Decryption (vector 152)
+    ✓ PASS Round-trip (vector 152)
+
+Test Vector 153/264
+    ✓ PASS Encryption (vector 153)
+    ✓ PASS Decryption (vector 153)
+    ✓ PASS Round-trip (vector 153)
+
+Test Vector 154/264
+    ✓ PASS Encryption (vector 154)
+    ✓ PASS Decryption (vector 154)
+    ✓ PASS Round-trip (vector 154)
+
+Test Vector 155/264
+    ✓ PASS Encryption (vector 155)
+    ✓ PASS Decryption (vector 155)
+    ✓ PASS Round-trip (vector 155)
+
+Test Vector 156/264
+    ✓ PASS Encryption (vector 156)
+    ✓ PASS Decryption (vector 156)
+    ✓ PASS Round-trip (vector 156)
+
+Test Vector 157/264
+    ✓ PASS Encryption (vector 157)
+    ✓ PASS Decryption (vector 157)
+    ✓ PASS Round-trip (vector 157)
+
+Test Vector 158/264
+    ✓ PASS Encryption (vector 158)
+    ✓ PASS Decryption (vector 158)
+    ✓ PASS Round-trip (vector 158)
+
+Test Vector 159/264
+    ✓ PASS Encryption (vector 159)
+    ✓ PASS Decryption (vector 159)
+    ✓ PASS Round-trip (vector 159)
+
+Test Vector 160/264
+    ✓ PASS Encryption (vector 160)
+    ✓ PASS Decryption (vector 160)
+    ✓ PASS Round-trip (vector 160)
+
+Test Vector 161/264
+    ✓ PASS Encryption (vector 161)
+    ✓ PASS Decryption (vector 161)
+    ✓ PASS Round-trip (vector 161)
+
+Test Vector 162/264
+    ✓ PASS Encryption (vector 162)
+    ✓ PASS Decryption (vector 162)
+    ✓ PASS Round-trip (vector 162)
+
+Test Vector 163/264
+    ✓ PASS Encryption (vector 163)
+    ✓ PASS Decryption (vector 163)
+    ✓ PASS Round-trip (vector 163)
+
+Test Vector 164/264
+    ✓ PASS Encryption (vector 164)
+    ✓ PASS Decryption (vector 164)
+    ✓ PASS Round-trip (vector 164)
+
+Test Vector 165/264
+    ✓ PASS Encryption (vector 165)
+    ✓ PASS Decryption (vector 165)
+    ✓ PASS Round-trip (vector 165)
+
+Test Vector 166/264
+    ✓ PASS Encryption (vector 166)
+    ✓ PASS Decryption (vector 166)
+    ✓ PASS Round-trip (vector 166)
+
+Test Vector 167/264
+    ✓ PASS Encryption (vector 167)
+    ✓ PASS Decryption (vector 167)
+    ✓ PASS Round-trip (vector 167)
+
+Test Vector 168/264
+    ✓ PASS Encryption (vector 168)
+    ✓ PASS Decryption (vector 168)
+    ✓ PASS Round-trip (vector 168)
+
+Test Vector 169/264
+    ✓ PASS Encryption (vector 169)
+    ✓ PASS Decryption (vector 169)
+    ✓ PASS Round-trip (vector 169)
+
+Test Vector 170/264
+    ✓ PASS Encryption (vector 170)
+    ✓ PASS Decryption (vector 170)
+    ✓ PASS Round-trip (vector 170)
+
+Test Vector 171/264
+    ✓ PASS Encryption (vector 171)
+    ✓ PASS Decryption (vector 171)
+    ✓ PASS Round-trip (vector 171)
+
+Test Vector 172/264
+    ✓ PASS Encryption (vector 172)
+    ✓ PASS Decryption (vector 172)
+    ✓ PASS Round-trip (vector 172)
+
+Test Vector 173/264
+    ✓ PASS Encryption (vector 173)
+    ✓ PASS Decryption (vector 173)
+    ✓ PASS Round-trip (vector 173)
+
+Test Vector 174/264
+    ✓ PASS Encryption (vector 174)
+    ✓ PASS Decryption (vector 174)
+    ✓ PASS Round-trip (vector 174)
+
+Test Vector 175/264
+    ✓ PASS Encryption (vector 175)
+    ✓ PASS Decryption (vector 175)
+    ✓ PASS Round-trip (vector 175)
+
+Test Vector 176/264
+    ✓ PASS Encryption (vector 176)
+    ✓ PASS Decryption (vector 176)
+    ✓ PASS Round-trip (vector 176)
+
+Test Vector 177/264
+    ✓ PASS Encryption (vector 177)
+    ✓ PASS Decryption (vector 177)
+    ✓ PASS Round-trip (vector 177)
+
+Test Vector 178/264
+    ✓ PASS Encryption (vector 178)
+    ✓ PASS Decryption (vector 178)
+    ✓ PASS Round-trip (vector 178)
+
+Test Vector 179/264
+    ✓ PASS Encryption (vector 179)
+    ✓ PASS Decryption (vector 179)
+    ✓ PASS Round-trip (vector 179)
+
+Test Vector 180/264
+    ✓ PASS Encryption (vector 180)
+    ✓ PASS Decryption (vector 180)
+    ✓ PASS Round-trip (vector 180)
+
+Test Vector 181/264
+    ✓ PASS Encryption (vector 181)
+    ✓ PASS Decryption (vector 181)
+    ✓ PASS Round-trip (vector 181)
+
+Test Vector 182/264
+    ✓ PASS Encryption (vector 182)
+    ✓ PASS Decryption (vector 182)
+    ✓ PASS Round-trip (vector 182)
+
+Test Vector 183/264
+    ✓ PASS Encryption (vector 183)
+    ✓ PASS Decryption (vector 183)
+    ✓ PASS Round-trip (vector 183)
+
+Test Vector 184/264
+    ✓ PASS Encryption (vector 184)
+    ✓ PASS Decryption (vector 184)
+    ✓ PASS Round-trip (vector 184)
+
+Test Vector 185/264
+    ✓ PASS Encryption (vector 185)
+    ✓ PASS Decryption (vector 185)
+    ✓ PASS Round-trip (vector 185)
+
+Test Vector 186/264
+    ✓ PASS Encryption (vector 186)
+    ✓ PASS Decryption (vector 186)
+    ✓ PASS Round-trip (vector 186)
+
+Test Vector 187/264
+    ✓ PASS Encryption (vector 187)
+    ✓ PASS Decryption (vector 187)
+    ✓ PASS Round-trip (vector 187)
+
+Test Vector 188/264
+    ✓ PASS Encryption (vector 188)
+    ✓ PASS Decryption (vector 188)
+    ✓ PASS Round-trip (vector 188)
+
+Test Vector 189/264
+    ✓ PASS Encryption (vector 189)
+    ✓ PASS Decryption (vector 189)
+    ✓ PASS Round-trip (vector 189)
+
+Test Vector 190/264
+    ✓ PASS Encryption (vector 190)
+    ✓ PASS Decryption (vector 190)
+    ✓ PASS Round-trip (vector 190)
+
+Test Vector 191/264
+    ✓ PASS Encryption (vector 191)
+    ✓ PASS Decryption (vector 191)
+    ✓ PASS Round-trip (vector 191)
+
+Test Vector 192/264
+    ✓ PASS Encryption (vector 192)
+    ✓ PASS Decryption (vector 192)
+    ✓ PASS Round-trip (vector 192)
+
+Test Vector 193/264
+    ✓ PASS Encryption (vector 193)
+    ✓ PASS Decryption (vector 193)
+    ✓ PASS Round-trip (vector 193)
+
+Test Vector 194/264
+    ✓ PASS Encryption (vector 194)
+    ✓ PASS Decryption (vector 194)
+    ✓ PASS Round-trip (vector 194)
+
+Test Vector 195/264
+    ✓ PASS Encryption (vector 195)
+    ✓ PASS Decryption (vector 195)
+    ✓ PASS Round-trip (vector 195)
+
+Test Vector 196/264
+    ✓ PASS Encryption (vector 196)
+    ✓ PASS Decryption (vector 196)
+    ✓ PASS Round-trip (vector 196)
+
+Test Vector 197/264
+    ✓ PASS Encryption (vector 197)
+    ✓ PASS Decryption (vector 197)
+    ✓ PASS Round-trip (vector 197)
+
+Test Vector 198/264
+    ✓ PASS Encryption (vector 198)
+    ✓ PASS Decryption (vector 198)
+    ✓ PASS Round-trip (vector 198)
+
+Test Vector 199/264
+    ✓ PASS Encryption (vector 199)
+    ✓ PASS Decryption (vector 199)
+    ✓ PASS Round-trip (vector 199)
+
+Test Vector 200/264
+    ✓ PASS Encryption (vector 200)
+    ✓ PASS Decryption (vector 200)
+    ✓ PASS Round-trip (vector 200)
+
+Test Vector 201/264
+    ✓ PASS Encryption (vector 201)
+    ✓ PASS Decryption (vector 201)
+    ✓ PASS Round-trip (vector 201)
+
+Test Vector 202/264
+    ✓ PASS Encryption (vector 202)
+    ✓ PASS Decryption (vector 202)
+    ✓ PASS Round-trip (vector 202)
+
+Test Vector 203/264
+    ✓ PASS Encryption (vector 203)
+    ✓ PASS Decryption (vector 203)
+    ✓ PASS Round-trip (vector 203)
+
+Test Vector 204/264
+    ✓ PASS Encryption (vector 204)
+    ✓ PASS Decryption (vector 204)
+    ✓ PASS Round-trip (vector 204)
+
+Test Vector 205/264
+    ✓ PASS Encryption (vector 205)
+    ✓ PASS Decryption (vector 205)
+    ✓ PASS Round-trip (vector 205)
+
+Test Vector 206/264
+    ✓ PASS Encryption (vector 206)
+    ✓ PASS Decryption (vector 206)
+    ✓ PASS Round-trip (vector 206)
+
+Test Vector 207/264
+    ✓ PASS Encryption (vector 207)
+    ✓ PASS Decryption (vector 207)
+    ✓ PASS Round-trip (vector 207)
+
+Test Vector 208/264
+    ✓ PASS Encryption (vector 208)
+    ✓ PASS Decryption (vector 208)
+    ✓ PASS Round-trip (vector 208)
+
+Test Vector 209/264
+    ✓ PASS Encryption (vector 209)
+    ✓ PASS Decryption (vector 209)
+    ✓ PASS Round-trip (vector 209)
+
+Test Vector 210/264
+    ✓ PASS Encryption (vector 210)
+    ✓ PASS Decryption (vector 210)
+    ✓ PASS Round-trip (vector 210)
+
+Test Vector 211/264
+    ✓ PASS Encryption (vector 211)
+    ✓ PASS Decryption (vector 211)
+    ✓ PASS Round-trip (vector 211)
+
+Test Vector 212/264
+    ✓ PASS Encryption (vector 212)
+    ✓ PASS Decryption (vector 212)
+    ✓ PASS Round-trip (vector 212)
+
+Test Vector 213/264
+    ✓ PASS Encryption (vector 213)
+    ✓ PASS Decryption (vector 213)
+    ✓ PASS Round-trip (vector 213)
+
+Test Vector 214/264
+    ✓ PASS Encryption (vector 214)
+    ✓ PASS Decryption (vector 214)
+    ✓ PASS Round-trip (vector 214)
+
+Test Vector 215/264
+    ✓ PASS Encryption (vector 215)
+    ✓ PASS Decryption (vector 215)
+    ✓ PASS Round-trip (vector 215)
+
+Test Vector 216/264
+    ✓ PASS Encryption (vector 216)
+    ✓ PASS Decryption (vector 216)
+    ✓ PASS Round-trip (vector 216)
+
+Test Vector 217/264
+    ✓ PASS Encryption (vector 217)
+    ✓ PASS Decryption (vector 217)
+    ✓ PASS Round-trip (vector 217)
+
+Test Vector 218/264
+    ✓ PASS Encryption (vector 218)
+    ✓ PASS Decryption (vector 218)
+    ✓ PASS Round-trip (vector 218)
+
+Test Vector 219/264
+    ✓ PASS Encryption (vector 219)
+    ✓ PASS Decryption (vector 219)
+    ✓ PASS Round-trip (vector 219)
+
+Test Vector 220/264
+    ✓ PASS Encryption (vector 220)
+    ✓ PASS Decryption (vector 220)
+    ✓ PASS Round-trip (vector 220)
+
+Test Vector 221/264
+    ✓ PASS Encryption (vector 221)
+    ✓ PASS Decryption (vector 221)
+    ✓ PASS Round-trip (vector 221)
+
+Test Vector 222/264
+    ✓ PASS Encryption (vector 222)
+    ✓ PASS Decryption (vector 222)
+    ✓ PASS Round-trip (vector 222)
+
+Test Vector 223/264
+    ✓ PASS Encryption (vector 223)
+    ✓ PASS Decryption (vector 223)
+    ✓ PASS Round-trip (vector 223)
+
+Test Vector 224/264
+    ✓ PASS Encryption (vector 224)
+    ✓ PASS Decryption (vector 224)
+    ✓ PASS Round-trip (vector 224)
+
+Test Vector 225/264
+    ✓ PASS Encryption (vector 225)
+    ✓ PASS Decryption (vector 225)
+    ✓ PASS Round-trip (vector 225)
+
+Test Vector 226/264
+    ✓ PASS Encryption (vector 226)
+    ✓ PASS Decryption (vector 226)
+    ✓ PASS Round-trip (vector 226)
+
+Test Vector 227/264
+    ✓ PASS Encryption (vector 227)
+    ✓ PASS Decryption (vector 227)
+    ✓ PASS Round-trip (vector 227)
+
+Test Vector 228/264
+    ✓ PASS Encryption (vector 228)
+    ✓ PASS Decryption (vector 228)
+    ✓ PASS Round-trip (vector 228)
+
+Test Vector 229/264
+    ✓ PASS Encryption (vector 229)
+    ✓ PASS Decryption (vector 229)
+    ✓ PASS Round-trip (vector 229)
+
+Test Vector 230/264
+    ✓ PASS Encryption (vector 230)
+    ✓ PASS Decryption (vector 230)
+    ✓ PASS Round-trip (vector 230)
+
+Test Vector 231/264
+    ✓ PASS Encryption (vector 231)
+    ✓ PASS Decryption (vector 231)
+    ✓ PASS Round-trip (vector 231)
+
+Test Vector 232/264
+    ✓ PASS Encryption (vector 232)
+    ✓ PASS Decryption (vector 232)
+    ✓ PASS Round-trip (vector 232)
+
+Test Vector 233/264
+    ✓ PASS Encryption (vector 233)
+    ✓ PASS Decryption (vector 233)
+    ✓ PASS Round-trip (vector 233)
+
+Test Vector 234/264
+    ✓ PASS Encryption (vector 234)
+    ✓ PASS Decryption (vector 234)
+    ✓ PASS Round-trip (vector 234)
+
+Test Vector 235/264
+    ✓ PASS Encryption (vector 235)
+    ✓ PASS Decryption (vector 235)
+    ✓ PASS Round-trip (vector 235)
+
+Test Vector 236/264
+    ✓ PASS Encryption (vector 236)
+    ✓ PASS Decryption (vector 236)
+    ✓ PASS Round-trip (vector 236)
+
+Test Vector 237/264
+    ✓ PASS Encryption (vector 237)
+    ✓ PASS Decryption (vector 237)
+    ✓ PASS Round-trip (vector 237)
+
+Test Vector 238/264
+    ✓ PASS Encryption (vector 238)
+    ✓ PASS Decryption (vector 238)
+    ✓ PASS Round-trip (vector 238)
+
+Test Vector 239/264
+    ✓ PASS Encryption (vector 239)
+    ✓ PASS Decryption (vector 239)
+    ✓ PASS Round-trip (vector 239)
+
+Test Vector 240/264
+    ✓ PASS Encryption (vector 240)
+    ✓ PASS Decryption (vector 240)
+    ✓ PASS Round-trip (vector 240)
+
+Test Vector 241/264
+    ✓ PASS Encryption (vector 241)
+    ✓ PASS Decryption (vector 241)
+    ✓ PASS Round-trip (vector 241)
+
+Test Vector 242/264
+    ✓ PASS Encryption (vector 242)
+    ✓ PASS Decryption (vector 242)
+    ✓ PASS Round-trip (vector 242)
+
+Test Vector 243/264
+    ✓ PASS Encryption (vector 243)
+    ✓ PASS Decryption (vector 243)
+    ✓ PASS Round-trip (vector 243)
+
+Test Vector 244/264
+    ✓ PASS Encryption (vector 244)
+    ✓ PASS Decryption (vector 244)
+    ✓ PASS Round-trip (vector 244)
+
+Test Vector 245/264
+    ✓ PASS Encryption (vector 245)
+    ✓ PASS Decryption (vector 245)
+    ✓ PASS Round-trip (vector 245)
+
+Test Vector 246/264
+    ✓ PASS Encryption (vector 246)
+    ✓ PASS Decryption (vector 246)
+    ✓ PASS Round-trip (vector 246)
+
+Test Vector 247/264
+    ✓ PASS Encryption (vector 247)
+    ✓ PASS Decryption (vector 247)
+    ✓ PASS Round-trip (vector 247)
+
+Test Vector 248/264
+    ✓ PASS Encryption (vector 248)
+    ✓ PASS Decryption (vector 248)
+    ✓ PASS Round-trip (vector 248)
+
+Test Vector 249/264
+    ✓ PASS Encryption (vector 249)
+    ✓ PASS Decryption (vector 249)
+    ✓ PASS Round-trip (vector 249)
+
+Test Vector 250/264
+    ✓ PASS Encryption (vector 250)
+    ✓ PASS Decryption (vector 250)
+    ✓ PASS Round-trip (vector 250)
+
+Test Vector 251/264
+    ✓ PASS Encryption (vector 251)
+    ✓ PASS Decryption (vector 251)
+    ✓ PASS Round-trip (vector 251)
+
+Test Vector 252/264
+    ✓ PASS Encryption (vector 252)
+    ✓ PASS Decryption (vector 252)
+    ✓ PASS Round-trip (vector 252)
+
+Test Vector 253/264
+    ✓ PASS Encryption (vector 253)
+    ✓ PASS Decryption (vector 253)
+    ✓ PASS Round-trip (vector 253)
+
+Test Vector 254/264
+    ✓ PASS Encryption (vector 254)
+    ✓ PASS Decryption (vector 254)
+    ✓ PASS Round-trip (vector 254)
+
+Test Vector 255/264
+    ✓ PASS Encryption (vector 255)
+    ✓ PASS Decryption (vector 255)
+    ✓ PASS Round-trip (vector 255)
+
+Test Vector 256/264
+    ✓ PASS Encryption (vector 256)
+    ✓ PASS Decryption (vector 256)
+    ✓ PASS Round-trip (vector 256)
+
+Test Vector 257/264
+    ✓ PASS Encryption (vector 257)
+    ✓ PASS Decryption (vector 257)
+    ✓ PASS Round-trip (vector 257)
+
+Test Vector 258/264
+    ✓ PASS Encryption (vector 258)
+    ✓ PASS Decryption (vector 258)
+    ✓ PASS Round-trip (vector 258)
+
+Test Vector 259/264
+    ✓ PASS Encryption (vector 259)
+    ✓ PASS Decryption (vector 259)
+    ✓ PASS Round-trip (vector 259)
+
+Test Vector 260/264
+    ✓ PASS Encryption (vector 260)
+    ✓ PASS Decryption (vector 260)
+    ✓ PASS Round-trip (vector 260)
+
+Test Vector 261/264
+    ✓ PASS Encryption (vector 261)
+    ✓ PASS Decryption (vector 261)
+    ✓ PASS Round-trip (vector 261)
+
+Test Vector 262/264
+    ✓ PASS Encryption (vector 262)
+    ✓ PASS Decryption (vector 262)
+    ✓ PASS Round-trip (vector 262)
+
+Test Vector 263/264
+    ✓ PASS Encryption (vector 263)
+    ✓ PASS Decryption (vector 263)
+    ✓ PASS Round-trip (vector 263)
+
+Test Vector 264/264
+    ✓ PASS Encryption (vector 264)
+    ✓ PASS Decryption (vector 264)
+    ✓ PASS Round-trip (vector 264)
+
+
+======================================================================
+Test Summary
+======================================================================
+  Total:  792
+  Pass:   792
+  Fail:   0
+  Success Rate: 100.0%
+======================================================================
+
+✓ All tests passed!
+
+[LOG] Full test transcript saved to C:\amd-vivado-projects\aes_vscode\hil\results\hil_test_results_20260518_164906.txt
